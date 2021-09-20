@@ -6,12 +6,13 @@
 extern "C" {
 #endif
 
-#include "stm32l4xx_hal.h"
-
-#define RAMFUNC __attribute__ ((section (".RamFunc")))
-
+#include <stdio.h>
+#include "termcolor.h"
 
 
+void UartAPI_PrintMenu(void);
+
+void UartAPI_WaitForCommand(void);
 
 
 #ifdef __cplusplus

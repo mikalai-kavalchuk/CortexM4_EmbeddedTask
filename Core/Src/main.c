@@ -27,10 +27,20 @@ int main(void)
   MX_I2C2_Init();
   MX_USART1_UART_Init();
 
+  /* Don't use buffer for stdin */
+  setbuf(stdin, NULL);
+
+  /* Clear terminal window */
+  printf(TC_CLS);
+  printf(TC_HOME);
+
+  printf(TC_MAGENTA"---------------- UART<->I2C Controller ---------------\r\n");
+  UartAPI_PrintMenu();
+
   /* Infinite loop */
   while (1)
   {
-
+      UartAPI_WaitForCommand();
   }
 }
 

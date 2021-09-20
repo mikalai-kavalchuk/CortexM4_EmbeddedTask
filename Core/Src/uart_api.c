@@ -1,7 +1,33 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
 #include "uart_api.h"
 #include "stm32l4xx_hal.h"
 
+
+#define INCOMING_BUFF_LENGTH    64
+#define COMMANDS_COUNT          4
+
 extern UART_HandleTypeDef huart1;
+
+typedef struct
+{
+    const char *command_name;
+    int (*run_func)(int);
+} Command_t;
+
+static int set_fan_speed(int var);
+static int get_fan_speed(int var);
+static int get_temperature(int var);
+static int self_erase(int var);
+
+Command_t commands_list[COMMANDS_COUNT] = {
+    {"set_fan_speed", set_fan_speed},
+    {"get_fan_speed", get_fan_speed},
+    {"get_temperature", get_temperature},
+    {"self_erase", self_erase}
+};
 
 /**
  * @brief Custom implementation of WEAK __io_putchar() function from syscallc.c
@@ -97,6 +123,82 @@ __RAM_FUNC void mass_erase_from_ram(void)
     }
 }
 
+int set_fan_speed(int var)
+{
+    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
+    return 0;
+}
+int get_fan_speed(int var)
+{
+    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
+    return 0;
+}
+int get_temperature(int var)
+{
+    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
+    return 0;
+}
+int self_erase(int var)
+{
+    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
+    return 0;
+}
 
+
+
+void UartAPI_PrintMenu(void)
+{
+    printf(TC_YELLOW"\r\n\r\nUse next commands to control peripheral devices:\r\n");
+    printf(TC_YELLOW"- %s,speed,<0..100>\r\n", commands_list[0].command_name);
+    printf(TC_YELLOW"- %s\r\n", commands_list[1].command_name);
+    printf(TC_YELLOW"- %s\r\n", commands_list[2].command_name);
+    printf(TC_YELLOW"- %s "TC_RED"*Warning: this operation is irreversible\r\n\r\n", commands_list[3].command_name);
+}
+
+
+void UartAPI_WaitForCommand(void)
+{
+    char incom[INCOMING_BUFF_LENGTH];
+    int value = -1;
+    int res = -1;
+    char *p;
+    bool command_found = false;
+
+    printf(TC_RESET"Waiting for commands..\r\n\r\n");
+
+    memset(incom, 0 ,INCOMING_BUFF_LENGTH);
+    scanf("%s", incom);
+
+    for(int i=0; i<4; i++)
+    {
+        p = strstr(incom, commands_list[i].command_name);
+
+        if( p != NULL )
+        {
+            command_found = true;
+
+            p = strstr(incom,",");
+            if( p != NULL )
+            {
+                value = atoi(p+1);
+            }
+            res = commands_list[i].run_func(value);
+            if(res != 1)
+            {
+
+            }
+            else
+            {
+
+            }
+            break;
+        }
+    }
+
+    if(!command_found)
+    {
+        printf(TC_YELLOW"Command \"%s\" is not found..\r\n\r\n", incom);
+    }
+}
 
 
