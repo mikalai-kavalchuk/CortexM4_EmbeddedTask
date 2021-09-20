@@ -9,10 +9,15 @@ extern "C" {
 #include <stdio.h>
 #include "termcolor.h"
 
-
+/**
+ * @brief Print menu with information about commands
+ */
 void UartAPI_PrintMenu(void);
 
-void UartAPI_WaitForCommand(void);
+/**
+ * @brief Waits for incoming command and execute it
+ */
+void UartAPI_WaitForCommandAndExecute(void);
 
 
 #ifdef __cplusplus

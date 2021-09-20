@@ -40,7 +40,7 @@ int main(void)
   /* Infinite loop */
   while (1)
   {
-      UartAPI_WaitForCommand();
+      UartAPI_WaitForCommandAndExecute();
   }
 }
 
