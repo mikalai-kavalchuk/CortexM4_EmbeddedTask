@@ -2,37 +2,15 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "uart_api.h"
 #include "stm32l4xx_hal.h"
-
+#include "user_functions.h"
+#include "uart_api.h"
 
 #define INCOMING_BUFF_LENGTH    64
-#define COMMANDS_COUNT          4
 
 extern UART_HandleTypeDef huart1;
 
-typedef struct
-{
-    const char *command_name;
-    int (*run_func)(int);
-} Command_t;
-
-
-/* Prototypes for console commands */
-static int set_fan_speed(int var);
-static int get_fan_speed(int var);
-static int get_temperature(int var);
-static int self_erase(int var);
-
-/**
- * List of commands with their names
- */
-Command_t commands_list[COMMANDS_COUNT] = {
-    {"set_fan_speed", set_fan_speed},
-    {"get_fan_speed", get_fan_speed},
-    {"get_temperature", get_temperature},
-    {"self_erase", self_erase}
-};
+UART_HandleTypeDef huart1;
 
 /**
  * @brief Custom implementation of WEAK __io_putchar() function from syscallc.c
@@ -83,10 +61,27 @@ int __io_getchar(void)
     return ch;
 }
 
-/**
- * @brief Send char thru UART1 using registers only. The function is executed in RAM
- */
-static __RAM_FUNC void UART1_send_char(char c)
+
+void UartAPI_Init(void)
+{
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+
+__RAM_FUNC void UartAPI_SendChar(char c)
 {
     /* Load the Data */
     USART1->TDR = c;
@@ -97,10 +92,8 @@ static __RAM_FUNC void UART1_send_char(char c)
     }
 }
 
-/**
- * @brief Get incoming char from UART1 using registers only. The function is executed in RAM
- */
-static __RAM_FUNC char UART1_get_char(void)
+
+__RAM_FUNC char UartAPI_GetChar(void)
 {
     char temp;
     /* Wait for RXNE to SET. This indicates that the data has been Received */
@@ -113,148 +106,13 @@ static __RAM_FUNC char UART1_get_char(void)
     return temp;
 }
 
-/**
- * @brief Send string thru UART1. The function is executed in RAM
- */
-static __RAM_FUNC void UART1_send_string(char *c, int len)
+
+__RAM_FUNC void UartAPI_SendString(char *c, int len)
 {
     for(int i=0; i<len; i++)
     {
-        UART1_send_char(*c++);
+        UartAPI_SendChar(*c++);
     }
-}
-
-/**
- * @brief Mass erasing of FLASH from RAM
- */
-static __RAM_FUNC void mass_erase_from_ram(void)
-{
-    char value;
-    char * str_no_func = "\r\n"TC_RED"No functional\r\n"TC_RESET;
-    int str_no_func_len = strlen(str_no_func);
-    char * str_info = "\r\n"TC_RED"MCU FLASH was erased. Device is not functional now. It will not start after reset!\r\n"TC_RESET;
-    int str_info_len = strlen(str_info);
-
-    /* Authorize the FLASH Registers access */
-    WRITE_REG(FLASH->KEYR, FLASH_KEY1);
-    WRITE_REG(FLASH->KEYR, FLASH_KEY2);
-
-    /* Wait for last operation to be completed */
-    while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY))
-    {
-        __asm__("nop");
-    }
-
-    /* Disable instruction cache  */
-    __HAL_FLASH_INSTRUCTION_CACHE_DISABLE();
-
-    /* Set the Mass Erase Bit for the bank 1 */
-    SET_BIT(FLASH->CR, FLASH_CR_MER1);
-
-    /* Set the Mass Erase Bit for the bank 2 */
-    SET_BIT(FLASH->CR, FLASH_CR_MER2);
-
-    /* Proceed to erase all sectors */
-    SET_BIT(FLASH->CR, FLASH_CR_STRT);
-
-    /* Wait for last operation to be completed */
-    while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY))
-    {
-        __asm__("nop");
-    }
-
-    /* Set the LOCK Bit to lock the FLASH Registers access */
-    SET_BIT(FLASH->CR, FLASH_CR_LOCK);
-
-    UART1_send_string(str_info, str_info_len);
-
-    /* Handle incoming commands after erasing */
-    while(1)
-    {
-        value = UART1_get_char();
-        UART1_send_char(value);
-        switch(value)
-        {
-            case '\r':
-            case '\n':
-                UART1_send_string(str_no_func, str_no_func_len);
-                break;
-            default:
-                break;
-        }
-    }
-}
-
-/**
- * @brief Handler for "set_fan_speed" command
- * @param[in] desired speed <0..100>
- */
-static int set_fan_speed(int var)
-{
-    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
-    return 0;
-}
-
-/**
- * @brief Handler for "get_fan_speed" command
- * @param[in] not used
- */
-static int get_fan_speed(int var)
-{
-    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
-    return 0;
-}
-
-/**
- * @brief Handler for "get_temperature" command
- * @param[in] not used
- */
-static int get_temperature(int var)
-{
-    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
-    return 0;
-}
-
-/**
- * @brief Handler for "self_erase" command
- * @param[in] not used
- */
-static int self_erase(int var)
-{
-    char value;
-    bool wait_for_op = true;
-
-    printf(TC_RED"*WARNING: this operation is irreversible!\r\n");
-
-
-    while(wait_for_op)
-    {
-        printf(TC_YELLOW"\r\nPlease, type [Y] to confirm or [N] to reject the ERASE operation: "TC_RESET);
-        fflush(stdout);
-        fflush(stdin);
-        scanf("%c", &value);
-        switch(value)
-        {
-            case 'y':
-            case 'Y':
-                printf(TC_YELLOW"\r\nOperation accepted\r\n");
-                __disable_irq();
-                mass_erase_from_ram();
-                break;
-
-            case 'n':
-            case 'N':
-                printf(TC_YELLOW"\r\nOperation declined\r\n");
-                wait_for_op = false;
-                break;
-
-            default:
-                wait_for_op = true;
-                break;
-        }
-    }
-
-    return 0;
 }
 
 
@@ -284,12 +142,14 @@ void UartAPI_WaitForCommandAndExecute(void)
     for(int i=0; i<COMMANDS_COUNT; i++)
     {
         p = strstr(incom, commands_list[i].command_name);
+
         /* Command found */
         if( p != NULL )
         {
             command_found = true;
 
             p = strstr(incom,",");
+
             /* Value found */
             if( p != NULL )
             {
