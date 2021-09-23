@@ -1,0 +1,1580 @@
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"user_functions.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.rodata.get_status.str1.4,"aMS",%progbits,1
+  18              		.align	2
+  19              	.LC0:
+  20 0000 4552524F 		.ascii	"ERROR\000"
+  20      5200
+  21 0006 0000     		.align	2
+  22              	.LC1:
+  23 0008 4F4B00   		.ascii	"OK\000"
+  24              		.section	.text.get_status,"ax",%progbits
+  25              		.align	1
+  26              		.arch armv7e-m
+  27              		.syntax unified
+  28              		.thumb
+  29              		.thumb_func
+  30              		.fpu fpv4-sp-d16
+  32              	get_status:
+  33              	.LVL0:
+  34              	.LFB135:
+  35              		.file 1 "user_functions.c"
+   1:user_functions.c **** #include <stdlib.h>
+   2:user_functions.c **** #include <string.h>
+   3:user_functions.c **** #include <stdbool.h>
+   4:user_functions.c **** 
+   5:user_functions.c **** #include "user_functions.h"
+   6:user_functions.c **** #include "uart_api.h"
+   7:user_functions.c **** #include "i2c_api.h"
+   8:user_functions.c **** #include "stm32l4xx_hal.h"
+   9:user_functions.c **** 
+  10:user_functions.c **** #include "max6650.h"
+  11:user_functions.c **** 
+  12:user_functions.c **** #define COMMANDS_COUNT          4
+  13:user_functions.c **** 
+  14:user_functions.c **** static MAX6650_Config_t *max6650_config = NULL;
+  15:user_functions.c **** 
+  16:user_functions.c **** /* MAX6650 I2C external interface configuration */
+  17:user_functions.c **** static const struct MAX6650_I2C_ExtInterface max6650_i2c_ext_interface =
+  18:user_functions.c **** {
+  19:user_functions.c ****     .i2c_setup = I2C_API_Init,
+  20:user_functions.c ****     .i2c_read = I2C_API_ReadMultiple,
+  21:user_functions.c ****     .i2c_write = I2C_API_WriteMultiple
+  22:user_functions.c **** };
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 2
+
+
+  23:user_functions.c **** 
+  24:user_functions.c **** 
+  25:user_functions.c **** /* Prototypes for console commands */
+  26:user_functions.c **** static bool set_fan_speed(int var);
+  27:user_functions.c **** static bool get_fan_speed(int var);
+  28:user_functions.c **** static bool self_erase(int var);
+  29:user_functions.c **** static bool help(int var);
+  30:user_functions.c **** 
+  31:user_functions.c **** 
+  32:user_functions.c **** /**
+  33:user_functions.c ****  * List of commands with their names
+  34:user_functions.c ****  */
+  35:user_functions.c **** static Command_t commands_list[COMMANDS_COUNT] = {
+  36:user_functions.c ****     {set_fan_speed,     "set_fan_speed",    ",speed<0..100>"},
+  37:user_functions.c ****     {get_fan_speed,     "get_fan_speed",    ""},
+  38:user_functions.c ****     {self_erase,        "self_erase",       " "TC_RED"*Warning: this operation is irreversible"TC_R
+  39:user_functions.c ****     {help,              "help",             ""}
+  40:user_functions.c **** };
+  41:user_functions.c **** 
+  42:user_functions.c **** 
+  43:user_functions.c **** /**
+  44:user_functions.c ****  * Get string for status name
+  45:user_functions.c ****  */
+  46:user_functions.c **** static const char* get_status(bool status)
+  47:user_functions.c **** {
+  36              		.loc 1 47 1 view -0
+  37              		.cfi_startproc
+  38              		@ args = 0, pretend = 0, frame = 0
+  39              		@ frame_needed = 0, uses_anonymous_args = 0
+  40              		@ link register save eliminated.
+  48:user_functions.c ****     const char* ok = "OK";
+  41              		.loc 1 48 5 view .LVU1
+  49:user_functions.c ****     const char* err = "ERROR";
+  42              		.loc 1 49 5 view .LVU2
+  50:user_functions.c **** 
+  51:user_functions.c ****     return status == true ? ok : err;
+  43              		.loc 1 51 5 view .LVU3
+  44              		.loc 1 51 32 is_stmt 0 view .LVU4
+  45 0000 08B1     		cbz	r0, .L3
+  46 0002 0248     		ldr	r0, .L4
+  47              	.LVL1:
+  48              		.loc 1 51 32 view .LVU5
+  49 0004 7047     		bx	lr
+  50              	.LVL2:
+  51              	.L3:
+  52              		.loc 1 51 32 view .LVU6
+  53 0006 0248     		ldr	r0, .L4+4
+  54              	.LVL3:
+  52:user_functions.c **** }
+  55              		.loc 1 52 1 view .LVU7
+  56 0008 7047     		bx	lr
+  57              	.L5:
+  58 000a 00BF     		.align	2
+  59              	.L4:
+  60 000c 08000000 		.word	.LC1
+  61 0010 00000000 		.word	.LC0
+  62              		.cfi_endproc
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 3
+
+
+  63              	.LFE135:
+  65              		.section	.rodata.max6650_init.str1.4,"aMS",%progbits,1
+  66              		.align	2
+  67              	.LC2:
+  68 0000 1B5B3331 		.ascii	"\033[31mMAX6650 config: no memory\015\000"
+  68      6D4D4158 
+  68      36363530 
+  68      20636F6E 
+  68      6669673A 
+  69              		.align	2
+  70              	.LC3:
+  71 0020 1B5B3331 		.ascii	"\033[31mMAX6650 initialization error!\015\000"
+  71      6D4D4158 
+  71      36363530 
+  71      20696E69 
+  71      7469616C 
+  72              		.section	.text.max6650_init,"ax",%progbits
+  73              		.align	1
+  74              		.syntax unified
+  75              		.thumb
+  76              		.thumb_func
+  77              		.fpu fpv4-sp-d16
+  79              	max6650_init:
+  80              	.LFB141:
+  53:user_functions.c **** 
+  54:user_functions.c **** 
+  55:user_functions.c **** /**
+  56:user_functions.c ****  * @brief Mass erasing of FLASH from RAM
+  57:user_functions.c ****  */
+  58:user_functions.c **** static __RAM_FUNC void mass_erase_from_ram(void)
+  59:user_functions.c **** {
+  60:user_functions.c ****     char value;
+  61:user_functions.c ****     char * str_no_func = "\r\n"TC_RED"No functional\r\n"TC_RESET;
+  62:user_functions.c ****     int str_no_func_len = strlen(str_no_func);
+  63:user_functions.c ****     char * str_info = "\r\n"TC_RED"MCU FLASH was erased. Device is not functional now. It will not 
+  64:user_functions.c ****     int str_info_len = strlen(str_info);
+  65:user_functions.c **** 
+  66:user_functions.c ****     /* Authorize the FLASH Registers access */
+  67:user_functions.c ****     WRITE_REG(FLASH->KEYR, FLASH_KEY1);
+  68:user_functions.c ****     WRITE_REG(FLASH->KEYR, FLASH_KEY2);
+  69:user_functions.c **** 
+  70:user_functions.c ****     /* Wait for last operation to be completed */
+  71:user_functions.c ****     while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY))
+  72:user_functions.c ****     {
+  73:user_functions.c ****         __asm__("nop");
+  74:user_functions.c ****     }
+  75:user_functions.c **** 
+  76:user_functions.c ****     /* Disable instruction cache  */
+  77:user_functions.c ****     __HAL_FLASH_INSTRUCTION_CACHE_DISABLE();
+  78:user_functions.c **** 
+  79:user_functions.c ****     /* Set the Mass Erase Bit for the bank 1 */
+  80:user_functions.c ****     SET_BIT(FLASH->CR, FLASH_CR_MER1);
+  81:user_functions.c **** 
+  82:user_functions.c ****     /* Set the Mass Erase Bit for the bank 2 */
+  83:user_functions.c ****     SET_BIT(FLASH->CR, FLASH_CR_MER2);
+  84:user_functions.c **** 
+  85:user_functions.c ****     /* Proceed to erase all sectors */
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 4
+
+
+  86:user_functions.c ****     SET_BIT(FLASH->CR, FLASH_CR_STRT);
+  87:user_functions.c **** 
+  88:user_functions.c ****     /* Wait for last operation to be completed */
+  89:user_functions.c ****     while(__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY))
+  90:user_functions.c ****     {
+  91:user_functions.c ****         __asm__("nop");
+  92:user_functions.c ****     }
+  93:user_functions.c **** 
+  94:user_functions.c ****     /* Set the LOCK Bit to lock the FLASH Registers access */
+  95:user_functions.c ****     SET_BIT(FLASH->CR, FLASH_CR_LOCK);
+  96:user_functions.c **** 
+  97:user_functions.c ****     UartAPI_SendString(str_info, str_info_len);
+  98:user_functions.c **** 
+  99:user_functions.c ****     /* Handle incoming commands after erasing */
+ 100:user_functions.c ****     while(1)
+ 101:user_functions.c ****     {
+ 102:user_functions.c ****         value = UartAPI_GetChar();
+ 103:user_functions.c ****         UartAPI_SendChar(value);
+ 104:user_functions.c ****         switch(value)
+ 105:user_functions.c ****         {
+ 106:user_functions.c ****             case '\r':
+ 107:user_functions.c ****             case '\n':
+ 108:user_functions.c ****                 UartAPI_SendString(str_no_func, str_no_func_len);
+ 109:user_functions.c ****                 break;
+ 110:user_functions.c ****             default:
+ 111:user_functions.c ****                 break;
+ 112:user_functions.c ****         }
+ 113:user_functions.c ****     }
+ 114:user_functions.c **** }
+ 115:user_functions.c **** 
+ 116:user_functions.c **** /**
+ 117:user_functions.c ****  * @brief Handler for "set_fan_speed" command
+ 118:user_functions.c ****  * @param[in] desired speed <0..100%>
+ 119:user_functions.c ****  */
+ 120:user_functions.c **** static bool set_fan_speed(int set_speed)
+ 121:user_functions.c **** {
+ 122:user_functions.c ****     uint8_t speed_actual = 0;
+ 123:user_functions.c ****     bool res;
+ 124:user_functions.c **** 
+ 125:user_functions.c ****     res = MAX6650_SetSpeed(set_speed, &speed_actual);
+ 126:user_functions.c ****     printf(TC_RESET"Status: %s\r\n", get_status(res));
+ 127:user_functions.c **** 
+ 128:user_functions.c ****     if(res!=false)
+ 129:user_functions.c ****     {
+ 130:user_functions.c ****         printf(TC_RESET"Set    speed: %d%%\r\n", set_speed);
+ 131:user_functions.c ****         printf(TC_RESET"Actual speed: %d%%\r\n", speed_actual);
+ 132:user_functions.c ****     }
+ 133:user_functions.c **** 
+ 134:user_functions.c ****     return res;
+ 135:user_functions.c **** }
+ 136:user_functions.c **** 
+ 137:user_functions.c **** /**
+ 138:user_functions.c ****  * @brief Handler for "get_fan_speed" command
+ 139:user_functions.c ****  * @param[in] not used
+ 140:user_functions.c ****  */
+ 141:user_functions.c **** static bool get_fan_speed(int var)
+ 142:user_functions.c **** {
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 5
+
+
+ 143:user_functions.c ****     uint8_t speed_actual = 0;
+ 144:user_functions.c ****     bool res;
+ 145:user_functions.c **** 
+ 146:user_functions.c ****     res = MAX6650_GetSpeed(&speed_actual);
+ 147:user_functions.c ****     printf(TC_RESET"Status: %s\r\n", get_status(res));
+ 148:user_functions.c **** 
+ 149:user_functions.c ****     if(res!=false)
+ 150:user_functions.c ****     {
+ 151:user_functions.c ****         printf(TC_RESET"Actual speed: %d%%\r\n", speed_actual);
+ 152:user_functions.c ****     }
+ 153:user_functions.c **** 
+ 154:user_functions.c ****     return res;
+ 155:user_functions.c **** }
+ 156:user_functions.c **** 
+ 157:user_functions.c **** 
+ 158:user_functions.c **** /**
+ 159:user_functions.c ****  * @brief Handler for "self_erase" command
+ 160:user_functions.c ****  * @param[in] not used
+ 161:user_functions.c ****  */
+ 162:user_functions.c **** static bool self_erase(int var)
+ 163:user_functions.c **** {
+ 164:user_functions.c ****     char value;
+ 165:user_functions.c ****     bool wait_for_op = true;
+ 166:user_functions.c **** 
+ 167:user_functions.c ****     printf(TC_RED"*WARNING: this operation is irreversible!\r\n");
+ 168:user_functions.c **** 
+ 169:user_functions.c **** 
+ 170:user_functions.c ****     while(wait_for_op)
+ 171:user_functions.c ****     {
+ 172:user_functions.c ****         printf(TC_YELLOW"\r\nPlease, type [Y] to confirm or [N] to reject the ERASE operation: "TC_
+ 173:user_functions.c ****         fflush(stdout);
+ 174:user_functions.c ****         fflush(stdin);
+ 175:user_functions.c ****         scanf("%c", &value);
+ 176:user_functions.c ****         switch(value)
+ 177:user_functions.c ****         {
+ 178:user_functions.c ****             case 'y':
+ 179:user_functions.c ****             case 'Y':
+ 180:user_functions.c ****                 printf(TC_YELLOW"\r\nOperation accepted\r\n");
+ 181:user_functions.c ****                 __disable_irq();
+ 182:user_functions.c ****                 mass_erase_from_ram();
+ 183:user_functions.c ****                 break;
+ 184:user_functions.c **** 
+ 185:user_functions.c ****             case 'n':
+ 186:user_functions.c ****             case 'N':
+ 187:user_functions.c ****                 printf(TC_YELLOW"\r\nOperation declined\r\n");
+ 188:user_functions.c ****                 wait_for_op = false;
+ 189:user_functions.c ****                 break;
+ 190:user_functions.c **** 
+ 191:user_functions.c ****             default:
+ 192:user_functions.c ****                 wait_for_op = true;
+ 193:user_functions.c ****                 break;
+ 194:user_functions.c ****         }
+ 195:user_functions.c ****     }
+ 196:user_functions.c **** 
+ 197:user_functions.c ****     return true;
+ 198:user_functions.c **** }
+ 199:user_functions.c **** 
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 6
+
+
+ 200:user_functions.c **** static bool help(int var)
+ 201:user_functions.c **** {
+ 202:user_functions.c ****     UartAPI_PrintMenu();
+ 203:user_functions.c ****     return true;
+ 204:user_functions.c **** }
+ 205:user_functions.c **** 
+ 206:user_functions.c **** static bool max6650_init()
+ 207:user_functions.c **** {
+  81              		.loc 1 207 1 is_stmt 1 view -0
+  82              		.cfi_startproc
+  83              		@ args = 0, pretend = 0, frame = 0
+  84              		@ frame_needed = 0, uses_anonymous_args = 0
+  85 0000 10B5     		push	{r4, lr}
+  86              	.LCFI0:
+  87              		.cfi_def_cfa_offset 8
+  88              		.cfi_offset 4, -8
+  89              		.cfi_offset 14, -4
+ 208:user_functions.c ****     bool res;
+  90              		.loc 1 208 5 view .LVU9
+ 209:user_functions.c **** 
+ 210:user_functions.c ****     max6650_config = (MAX6650_Config_t *) malloc(sizeof(max6650_config));
+  91              		.loc 1 210 5 view .LVU10
+  92              		.loc 1 210 43 is_stmt 0 view .LVU11
+  93 0002 0420     		movs	r0, #4
+  94 0004 FFF7FEFF 		bl	malloc
+  95              	.LVL4:
+  96              		.loc 1 210 20 view .LVU12
+  97 0008 0E4B     		ldr	r3, .L12
+  98 000a 1860     		str	r0, [r3]
+ 211:user_functions.c ****     if(max6650_config == NULL)
+  99              		.loc 1 211 5 is_stmt 1 view .LVU13
+ 100              		.loc 1 211 7 is_stmt 0 view .LVU14
+ 101 000c 88B1     		cbz	r0, .L10
+ 212:user_functions.c ****     {
+ 213:user_functions.c ****         printf(TC_RED"MAX6650 config: no memory\r\n");
+ 214:user_functions.c ****         return false;
+ 215:user_functions.c ****     }
+ 216:user_functions.c **** 
+ 217:user_functions.c ****     /* MAX6650/fan configuration */
+ 218:user_functions.c ****     max6650_config->add_line_connection = ADD_Line_GND;
+ 102              		.loc 1 218 5 is_stmt 1 view .LVU15
+ 103              		.loc 1 218 41 is_stmt 0 view .LVU16
+ 104 000e 0023     		movs	r3, #0
+ 105 0010 0370     		strb	r3, [r0]
+ 219:user_functions.c ****     max6650_config->rpm_max = 10500U;
+ 106              		.loc 1 219 5 is_stmt 1 view .LVU17
+ 107              		.loc 1 219 29 is_stmt 0 view .LVU18
+ 108 0012 42F60413 		movw	r3, #10500
+ 109 0016 8380     		strh	r3, [r0, #4]	@ movhi
+ 220:user_functions.c ****     max6650_config->fan_lovtage = FanVoltage_12V;
+ 110              		.loc 1 220 5 is_stmt 1 view .LVU19
+ 111              		.loc 1 220 33 is_stmt 0 view .LVU20
+ 112 0018 0123     		movs	r3, #1
+ 113 001a 8370     		strb	r3, [r0, #2]
+ 221:user_functions.c ****     max6650_config->operating_mode = OperatingMode_Closed_Loop;
+ 114              		.loc 1 221 5 is_stmt 1 view .LVU21
+ 115              		.loc 1 221 36 is_stmt 0 view .LVU22
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 7
+
+
+ 116 001c 0223     		movs	r3, #2
+ 117 001e 4370     		strb	r3, [r0, #1]
+ 222:user_functions.c ****     /* Select the KScale value so the fan’s full speed is achieved with a speed register value of
+ 223:user_functions.c ****      * Fan-Speed Register value (KTACH) may be calculated as:
+ 224:user_functions.c ****      * tTACH = 1 / (2 x Fan Speed[RPS])
+ 225:user_functions.c ****      * KTACH = [tTACH x KSCALE x (fCLK / 128)] - 1
+ 226:user_functions.c ****      *
+ 227:user_functions.c ****      * KSCALE=11.5 for 10500 RPM, so choosing scale=KScale_16, in this case KTACH=90 at max speed (
+ 228:user_functions.c ****     max6650_config->k_scale = KScale_16;
+ 118              		.loc 1 228 5 is_stmt 1 view .LVU23
+ 119              		.loc 1 228 29 is_stmt 0 view .LVU24
+ 120 0020 0423     		movs	r3, #4
+ 121 0022 C370     		strb	r3, [r0, #3]
+ 229:user_functions.c **** 
+ 230:user_functions.c ****     res = MAX6650_Init(max6650_config, &max6650_i2c_ext_interface);
+ 122              		.loc 1 230 5 is_stmt 1 view .LVU25
+ 123              		.loc 1 230 11 is_stmt 0 view .LVU26
+ 124 0024 0849     		ldr	r1, .L12+4
+ 125 0026 FFF7FEFF 		bl	MAX6650_Init
+ 126              	.LVL5:
+ 231:user_functions.c **** 
+ 232:user_functions.c ****     if(res != true)
+ 127              		.loc 1 232 5 is_stmt 1 view .LVU27
+ 128              		.loc 1 232 7 is_stmt 0 view .LVU28
+ 129 002a 0446     		mov	r4, r0
+ 130 002c 30B1     		cbz	r0, .L11
+ 131              	.LVL6:
+ 132              	.L8:
+ 233:user_functions.c ****     {
+ 234:user_functions.c ****         printf(TC_RED"MAX6650 initialization error!\r\n");
+ 235:user_functions.c ****         return false;
+ 236:user_functions.c ****     }
+ 237:user_functions.c **** 
+ 238:user_functions.c ****     return true;
+ 239:user_functions.c **** }
+ 133              		.loc 1 239 1 view .LVU29
+ 134 002e 2046     		mov	r0, r4
+ 135 0030 10BD     		pop	{r4, pc}
+ 136              	.L10:
+ 213:user_functions.c ****         return false;
+ 137              		.loc 1 213 9 is_stmt 1 view .LVU30
+ 138 0032 0648     		ldr	r0, .L12+8
+ 139 0034 FFF7FEFF 		bl	puts
+ 140              	.LVL7:
+ 214:user_functions.c ****     }
+ 141              		.loc 1 214 9 view .LVU31
+ 214:user_functions.c ****     }
+ 142              		.loc 1 214 16 is_stmt 0 view .LVU32
+ 143 0038 0024     		movs	r4, #0
+ 144 003a F8E7     		b	.L8
+ 145              	.LVL8:
+ 146              	.L11:
+ 234:user_functions.c ****         return false;
+ 147              		.loc 1 234 9 is_stmt 1 view .LVU33
+ 148 003c 0448     		ldr	r0, .L12+12
+ 149              	.LVL9:
+ 234:user_functions.c ****         return false;
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 8
+
+
+ 150              		.loc 1 234 9 is_stmt 0 view .LVU34
+ 151 003e FFF7FEFF 		bl	puts
+ 152              	.LVL10:
+ 235:user_functions.c ****     }
+ 153              		.loc 1 235 9 is_stmt 1 view .LVU35
+ 235:user_functions.c ****     }
+ 154              		.loc 1 235 16 is_stmt 0 view .LVU36
+ 155 0042 F4E7     		b	.L8
+ 156              	.L13:
+ 157              		.align	2
+ 158              	.L12:
+ 159 0044 00000000 		.word	.LANCHOR0
+ 160 0048 00000000 		.word	.LANCHOR1
+ 161 004c 00000000 		.word	.LC2
+ 162 0050 20000000 		.word	.LC3
+ 163              		.cfi_endproc
+ 164              	.LFE141:
+ 166              		.section	.text.help,"ax",%progbits
+ 167              		.align	1
+ 168              		.syntax unified
+ 169              		.thumb
+ 170              		.thumb_func
+ 171              		.fpu fpv4-sp-d16
+ 173              	help:
+ 174              	.LVL11:
+ 175              	.LFB140:
+ 201:user_functions.c ****     UartAPI_PrintMenu();
+ 176              		.loc 1 201 1 is_stmt 1 view -0
+ 177              		.cfi_startproc
+ 178              		@ args = 0, pretend = 0, frame = 0
+ 179              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201:user_functions.c ****     UartAPI_PrintMenu();
+ 180              		.loc 1 201 1 is_stmt 0 view .LVU38
+ 181 0000 08B5     		push	{r3, lr}
+ 182              	.LCFI1:
+ 183              		.cfi_def_cfa_offset 8
+ 184              		.cfi_offset 3, -8
+ 185              		.cfi_offset 14, -4
+ 202:user_functions.c ****     return true;
+ 186              		.loc 1 202 5 is_stmt 1 view .LVU39
+ 187 0002 FFF7FEFF 		bl	UartAPI_PrintMenu
+ 188              	.LVL12:
+ 203:user_functions.c **** }
+ 189              		.loc 1 203 5 view .LVU40
+ 204:user_functions.c **** 
+ 190              		.loc 1 204 1 is_stmt 0 view .LVU41
+ 191 0006 0120     		movs	r0, #1
+ 192 0008 08BD     		pop	{r3, pc}
+ 193              		.cfi_endproc
+ 194              	.LFE140:
+ 196              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 197              		.align	2
+ 198              	.LC4:
+ 199 0000 0D0A1B5B 		.ascii	"\015\012\033[31mMCU FLASH was erased. Device is not"
+ 199      33316D4D 
+ 199      43552046 
+ 199      4C415348 
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 9
+
+
+ 199      20776173 
+ 200 002a 2066756E 		.ascii	" functional now. It will not start after reset!\015"
+ 200      6374696F 
+ 200      6E616C20 
+ 200      6E6F772E 
+ 200      20497420 
+ 201 005a 0A1B5B30 		.ascii	"\012\033[0m\000"
+ 201      6D00
+ 202              		.align	2
+ 203              	.LC5:
+ 204 0060 0D0A1B5B 		.ascii	"\015\012\033[31mNo functional\015\012\033[0m\000"
+ 204      33316D4E 
+ 204      6F206675 
+ 204      6E637469 
+ 204      6F6E616C 
+ 205              		.section	.RamFunc,"ax",%progbits
+ 206              		.align	1
+ 207              		.syntax unified
+ 208              		.thumb
+ 209              		.thumb_func
+ 210              		.fpu fpv4-sp-d16
+ 212              	mass_erase_from_ram:
+ 213              	.LFB136:
+  59:user_functions.c ****     char value;
+ 214              		.loc 1 59 1 is_stmt 1 view -0
+ 215              		.cfi_startproc
+ 216              		@ args = 0, pretend = 0, frame = 0
+ 217              		@ frame_needed = 0, uses_anonymous_args = 0
+ 218 0000 10B5     		push	{r4, lr}
+ 219              	.LCFI2:
+ 220              		.cfi_def_cfa_offset 8
+ 221              		.cfi_offset 4, -8
+ 222              		.cfi_offset 14, -4
+  60:user_functions.c ****     char * str_no_func = "\r\n"TC_RED"No functional\r\n"TC_RESET;
+ 223              		.loc 1 60 5 view .LVU43
+  61:user_functions.c ****     int str_no_func_len = strlen(str_no_func);
+ 224              		.loc 1 61 5 view .LVU44
+ 225              	.LVL13:
+  62:user_functions.c ****     char * str_info = "\r\n"TC_RED"MCU FLASH was erased. Device is not functional now. It will not 
+ 226              		.loc 1 62 5 view .LVU45
+  63:user_functions.c ****     int str_info_len = strlen(str_info);
+ 227              		.loc 1 63 5 view .LVU46
+  64:user_functions.c **** 
+ 228              		.loc 1 64 5 view .LVU47
+  67:user_functions.c ****     WRITE_REG(FLASH->KEYR, FLASH_KEY2);
+ 229              		.loc 1 67 5 view .LVU48
+ 230 0002 1E4B     		ldr	r3, .L25
+ 231 0004 1E4A     		ldr	r2, .L25+4
+ 232 0006 9A60     		str	r2, [r3, #8]
+  68:user_functions.c **** 
+ 233              		.loc 1 68 5 view .LVU49
+ 234 0008 02F18832 		add	r2, r2, #-2004318072
+ 235 000c 9A60     		str	r2, [r3, #8]
+  71:user_functions.c ****     {
+ 236              		.loc 1 71 5 view .LVU50
+  71:user_functions.c ****     {
+ 237              		.loc 1 71 10 is_stmt 0 view .LVU51
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 10
+
+
+ 238 000e 00E0     		b	.L17
+ 239              	.L18:
+  73:user_functions.c ****     }
+ 240              		.loc 1 73 9 is_stmt 1 view .LVU52
+ 241              		.syntax unified
+ 242              	@ 73 "user_functions.c" 1
+ 243 0010 00BF     		nop
+ 244              	@ 0 "" 2
+ 245              		.thumb
+ 246              		.syntax unified
+ 247              	.L17:
+  71:user_functions.c ****     {
+ 248              		.loc 1 71 10 view .LVU53
+  71:user_functions.c ****     {
+ 249              		.loc 1 71 11 is_stmt 0 view .LVU54
+ 250 0012 1A4B     		ldr	r3, .L25
+ 251 0014 1B69     		ldr	r3, [r3, #16]
+  71:user_functions.c ****     {
+ 252              		.loc 1 71 10 view .LVU55
+ 253 0016 13F4803F 		tst	r3, #65536
+ 254 001a F9D1     		bne	.L18
+  77:user_functions.c **** 
+ 255              		.loc 1 77 5 is_stmt 1 view .LVU56
+ 256 001c 174B     		ldr	r3, .L25
+ 257 001e 1A68     		ldr	r2, [r3]
+ 258 0020 22F40072 		bic	r2, r2, #512
+ 259 0024 1A60     		str	r2, [r3]
+  80:user_functions.c **** 
+ 260              		.loc 1 80 5 view .LVU57
+ 261 0026 5A69     		ldr	r2, [r3, #20]
+ 262 0028 42F00402 		orr	r2, r2, #4
+ 263 002c 5A61     		str	r2, [r3, #20]
+  83:user_functions.c **** 
+ 264              		.loc 1 83 5 view .LVU58
+ 265 002e 5A69     		ldr	r2, [r3, #20]
+ 266 0030 42F40042 		orr	r2, r2, #32768
+ 267 0034 5A61     		str	r2, [r3, #20]
+  86:user_functions.c **** 
+ 268              		.loc 1 86 5 view .LVU59
+ 269 0036 5A69     		ldr	r2, [r3, #20]
+ 270 0038 42F48032 		orr	r2, r2, #65536
+ 271 003c 5A61     		str	r2, [r3, #20]
+  89:user_functions.c ****     {
+ 272              		.loc 1 89 5 view .LVU60
+  89:user_functions.c ****     {
+ 273              		.loc 1 89 10 is_stmt 0 view .LVU61
+ 274 003e 00E0     		b	.L19
+ 275              	.L20:
+  91:user_functions.c ****     }
+ 276              		.loc 1 91 9 is_stmt 1 view .LVU62
+ 277              		.syntax unified
+ 278              	@ 91 "user_functions.c" 1
+ 279 0040 00BF     		nop
+ 280              	@ 0 "" 2
+ 281              		.thumb
+ 282              		.syntax unified
+ 283              	.L19:
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 11
+
+
+  89:user_functions.c ****     {
+ 284              		.loc 1 89 10 view .LVU63
+  89:user_functions.c ****     {
+ 285              		.loc 1 89 11 is_stmt 0 view .LVU64
+ 286 0042 0E4B     		ldr	r3, .L25
+ 287 0044 1B69     		ldr	r3, [r3, #16]
+  89:user_functions.c ****     {
+ 288              		.loc 1 89 10 view .LVU65
+ 289 0046 13F4803F 		tst	r3, #65536
+ 290 004a F9D1     		bne	.L20
+  95:user_functions.c **** 
+ 291              		.loc 1 95 5 is_stmt 1 view .LVU66
+ 292 004c 0B4A     		ldr	r2, .L25
+ 293 004e 5369     		ldr	r3, [r2, #20]
+ 294 0050 43F00043 		orr	r3, r3, #-2147483648
+ 295 0054 5361     		str	r3, [r2, #20]
+  97:user_functions.c **** 
+ 296              		.loc 1 97 5 view .LVU67
+ 297 0056 5F21     		movs	r1, #95
+ 298 0058 0A48     		ldr	r0, .L25+8
+ 299 005a FFF7FEFF 		bl	UartAPI_SendString
+ 300              	.LVL14:
+ 301 005e 03E0     		b	.L22
+ 302              	.LVL15:
+ 303              	.L21:
+ 108:user_functions.c ****                 break;
+ 304              		.loc 1 108 17 view .LVU68
+ 305 0060 1A21     		movs	r1, #26
+ 306 0062 0948     		ldr	r0, .L25+12
+ 307 0064 FFF7FEFF 		bl	UartAPI_SendString
+ 308              	.LVL16:
+ 109:user_functions.c ****             default:
+ 309              		.loc 1 109 17 view .LVU69
+ 310              	.L22:
+ 100:user_functions.c ****     {
+ 311              		.loc 1 100 5 view .LVU70
+ 102:user_functions.c ****         UartAPI_SendChar(value);
+ 312              		.loc 1 102 9 view .LVU71
+ 102:user_functions.c ****         UartAPI_SendChar(value);
+ 313              		.loc 1 102 17 is_stmt 0 view .LVU72
+ 314 0068 FFF7FEFF 		bl	UartAPI_GetChar
+ 315              	.LVL17:
+ 316 006c 0446     		mov	r4, r0
+ 317              	.LVL18:
+ 103:user_functions.c ****         switch(value)
+ 318              		.loc 1 103 9 is_stmt 1 view .LVU73
+ 319 006e FFF7FEFF 		bl	UartAPI_SendChar
+ 320              	.LVL19:
+ 104:user_functions.c ****         {
+ 321              		.loc 1 104 9 view .LVU74
+ 322 0072 0A2C     		cmp	r4, #10
+ 323 0074 F4D0     		beq	.L21
+ 324 0076 0D2C     		cmp	r4, #13
+ 325 0078 F6D1     		bne	.L22
+ 326 007a F1E7     		b	.L21
+ 327              	.L26:
+ 328              		.align	2
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 12
+
+
+ 329              	.L25:
+ 330 007c 00200240 		.word	1073881088
+ 331 0080 23016745 		.word	1164378403
+ 332 0084 00000000 		.word	.LC4
+ 333 0088 60000000 		.word	.LC5
+ 334              		.cfi_endproc
+ 335              	.LFE136:
+ 337              		.section	.rodata.self_erase.str1.4,"aMS",%progbits,1
+ 338              		.align	2
+ 339              	.LC6:
+ 340 0000 1B5B3331 		.ascii	"\033[31m*WARNING: this operation is irreversible!\015"
+ 340      6D2A5741 
+ 340      524E494E 
+ 340      473A2074 
+ 340      68697320 
+ 341 002f 00       		.ascii	"\000"
+ 342              		.align	2
+ 343              	.LC7:
+ 344 0030 1B5B3333 		.ascii	"\033[33m\015\012Please, type [Y] to confirm or [N] "
+ 344      6D0D0A50 
+ 344      6C656173 
+ 344      652C2074 
+ 344      79706520 
+ 345 005a 746F2072 		.ascii	"to reject the ERASE operation: \033[0m\000"
+ 345      656A6563 
+ 345      74207468 
+ 345      65204552 
+ 345      41534520 
+ 346 007e 0000     		.align	2
+ 347              	.LC8:
+ 348 0080 256300   		.ascii	"%c\000"
+ 349 0083 00       		.align	2
+ 350              	.LC9:
+ 351 0084 1B5B3333 		.ascii	"\033[33m\015\012Operation accepted\015\000"
+ 351      6D0D0A4F 
+ 351      70657261 
+ 351      74696F6E 
+ 351      20616363 
+ 352 009f 00       		.align	2
+ 353              	.LC10:
+ 354 00a0 1B5B3333 		.ascii	"\033[33m\015\012Operation declined\015\000"
+ 354      6D0D0A4F 
+ 354      70657261 
+ 354      74696F6E 
+ 354      20646563 
+ 355              		.section	.text.self_erase,"ax",%progbits
+ 356              		.align	1
+ 357              		.syntax unified
+ 358              		.thumb
+ 359              		.thumb_func
+ 360              		.fpu fpv4-sp-d16
+ 362              	self_erase:
+ 363              	.LVL20:
+ 364              	.LFB139:
+ 163:user_functions.c ****     char value;
+ 365              		.loc 1 163 1 view -0
+ 366              		.cfi_startproc
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 13
+
+
+ 367              		@ args = 0, pretend = 0, frame = 8
+ 368              		@ frame_needed = 0, uses_anonymous_args = 0
+ 163:user_functions.c ****     char value;
+ 369              		.loc 1 163 1 is_stmt 0 view .LVU76
+ 370 0000 10B5     		push	{r4, lr}
+ 371              	.LCFI3:
+ 372              		.cfi_def_cfa_offset 8
+ 373              		.cfi_offset 4, -8
+ 374              		.cfi_offset 14, -4
+ 375 0002 82B0     		sub	sp, sp, #8
+ 376              	.LCFI4:
+ 377              		.cfi_def_cfa_offset 16
+ 164:user_functions.c ****     bool wait_for_op = true;
+ 378              		.loc 1 164 5 is_stmt 1 view .LVU77
+ 165:user_functions.c **** 
+ 379              		.loc 1 165 5 view .LVU78
+ 380              	.LVL21:
+ 167:user_functions.c **** 
+ 381              		.loc 1 167 5 view .LVU79
+ 382 0004 1548     		ldr	r0, .L33
+ 383              	.LVL22:
+ 167:user_functions.c **** 
+ 384              		.loc 1 167 5 is_stmt 0 view .LVU80
+ 385 0006 FFF7FEFF 		bl	puts
+ 386              	.LVL23:
+ 170:user_functions.c ****     {
+ 387              		.loc 1 170 5 is_stmt 1 view .LVU81
+ 170:user_functions.c ****     {
+ 388              		.loc 1 170 10 view .LVU82
+ 389 000a 01E0     		b	.L31
+ 390              	.LVL24:
+ 391              	.L29:
+ 176:user_functions.c ****         {
+ 392              		.loc 1 176 9 is_stmt 0 view .LVU83
+ 393 000c 792B     		cmp	r3, #121
+ 394 000e 19D0     		beq	.L30
+ 395              	.L31:
+ 172:user_functions.c ****         fflush(stdout);
+ 396              		.loc 1 172 9 is_stmt 1 view .LVU84
+ 397 0010 1348     		ldr	r0, .L33+4
+ 398 0012 FFF7FEFF 		bl	printf
+ 399              	.LVL25:
+ 173:user_functions.c ****         fflush(stdin);
+ 400              		.loc 1 173 9 view .LVU85
+ 173:user_functions.c ****         fflush(stdin);
+ 401              		.loc 1 173 16 is_stmt 0 view .LVU86
+ 402 0016 134C     		ldr	r4, .L33+8
+ 403 0018 2368     		ldr	r3, [r4]
+ 173:user_functions.c ****         fflush(stdin);
+ 404              		.loc 1 173 9 view .LVU87
+ 405 001a 9868     		ldr	r0, [r3, #8]
+ 406 001c FFF7FEFF 		bl	fflush
+ 407              	.LVL26:
+ 174:user_functions.c ****         scanf("%c", &value);
+ 408              		.loc 1 174 9 is_stmt 1 view .LVU88
+ 174:user_functions.c ****         scanf("%c", &value);
+ 409              		.loc 1 174 16 is_stmt 0 view .LVU89
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 14
+
+
+ 410 0020 2368     		ldr	r3, [r4]
+ 174:user_functions.c ****         scanf("%c", &value);
+ 411              		.loc 1 174 9 view .LVU90
+ 412 0022 5868     		ldr	r0, [r3, #4]
+ 413 0024 FFF7FEFF 		bl	fflush
+ 414              	.LVL27:
+ 175:user_functions.c ****         switch(value)
+ 415              		.loc 1 175 9 is_stmt 1 view .LVU91
+ 416 0028 0DF10701 		add	r1, sp, #7
+ 417 002c 0E48     		ldr	r0, .L33+12
+ 418 002e FFF7FEFF 		bl	scanf
+ 419              	.LVL28:
+ 176:user_functions.c ****         {
+ 420              		.loc 1 176 9 view .LVU92
+ 421 0032 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 422 0036 6E2B     		cmp	r3, #110
+ 423 0038 0AD0     		beq	.L28
+ 424 003a E7D8     		bhi	.L29
+ 425 003c 4E2B     		cmp	r3, #78
+ 426 003e 07D0     		beq	.L28
+ 427 0040 592B     		cmp	r3, #89
+ 428 0042 E5D1     		bne	.L31
+ 429              	.L30:
+ 180:user_functions.c ****                 __disable_irq();
+ 430              		.loc 1 180 17 view .LVU93
+ 431 0044 0948     		ldr	r0, .L33+16
+ 432 0046 FFF7FEFF 		bl	puts
+ 433              	.LVL29:
+ 181:user_functions.c ****                 mass_erase_from_ram();
+ 434              		.loc 1 181 17 view .LVU94
+ 435              	.LBB4:
+ 436              	.LBI4:
+ 437              		.file 2 "drivers/CMSIS/Include/cmsis_gcc.h"
+   1:drivers/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:drivers/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:drivers/CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:drivers/CMSIS/Include/cmsis_gcc.h ****  * @version  V5.2.0
+   5:drivers/CMSIS/Include/cmsis_gcc.h ****  * @date     08. May 2019
+   6:drivers/CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:drivers/CMSIS/Include/cmsis_gcc.h **** /*
+   8:drivers/CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2019 Arm Limited. All rights reserved.
+   9:drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  10:drivers/CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  12:drivers/CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:drivers/CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:drivers/CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  16:drivers/CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  18:drivers/CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:drivers/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:drivers/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:drivers/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:drivers/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+  24:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 15
+
+
+  25:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:drivers/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:drivers/CMSIS/Include/cmsis_gcc.h **** 
+  28:drivers/CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:drivers/CMSIS/Include/cmsis_gcc.h **** 
+  34:drivers/CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  38:drivers/CMSIS/Include/cmsis_gcc.h **** 
+  39:drivers/CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  43:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  46:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  49:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:drivers/CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  55:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  58:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  61:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  64:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  67:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  70:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:drivers/CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  78:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 16
+
+
+  82:drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  86:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  94:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __COMPILER_BARRIER
+ 117:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __COMPILER_BARRIER()                   __ASM volatile("":::"memory")
+ 118:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 119:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 120:drivers/CMSIS/Include/cmsis_gcc.h **** /* #########################  Startup and Lowlevel Init  ######################## */
+ 121:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 122:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __PROGRAM_START
+ 123:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 124:drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 125:drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Initializes data and bss sections
+ 126:drivers/CMSIS/Include/cmsis_gcc.h ****   \details This default implementations initialized all data and additional bss
+ 127:drivers/CMSIS/Include/cmsis_gcc.h ****            sections relying on .copy.table and .zero.table specified properly
+ 128:drivers/CMSIS/Include/cmsis_gcc.h ****            in the used linker script.
+ 129:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 130:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 131:drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE __NO_RETURN void __cmsis_start(void)
+ 132:drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 133:drivers/CMSIS/Include/cmsis_gcc.h ****   extern void _start(void) __NO_RETURN;
+ 134:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 135:drivers/CMSIS/Include/cmsis_gcc.h ****   typedef struct {
+ 136:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t const* src;
+ 137:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t* dest;
+ 138:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t  wlen;
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 17
+
+
+ 139:drivers/CMSIS/Include/cmsis_gcc.h ****   } __copy_table_t;
+ 140:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 141:drivers/CMSIS/Include/cmsis_gcc.h ****   typedef struct {
+ 142:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t* dest;
+ 143:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t  wlen;
+ 144:drivers/CMSIS/Include/cmsis_gcc.h ****   } __zero_table_t;
+ 145:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 146:drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __copy_table_t __copy_table_start__;
+ 147:drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __copy_table_t __copy_table_end__;
+ 148:drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __zero_table_t __zero_table_start__;
+ 149:drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __zero_table_t __zero_table_end__;
+ 150:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 151:drivers/CMSIS/Include/cmsis_gcc.h ****   for (__copy_table_t const* pTable = &__copy_table_start__; pTable < &__copy_table_end__; ++pTable
+ 152:drivers/CMSIS/Include/cmsis_gcc.h ****     for(uint32_t i=0u; i<pTable->wlen; ++i) {
+ 153:drivers/CMSIS/Include/cmsis_gcc.h ****       pTable->dest[i] = pTable->src[i];
+ 154:drivers/CMSIS/Include/cmsis_gcc.h ****     }
+ 155:drivers/CMSIS/Include/cmsis_gcc.h ****   }
+ 156:drivers/CMSIS/Include/cmsis_gcc.h ****  
+ 157:drivers/CMSIS/Include/cmsis_gcc.h ****   for (__zero_table_t const* pTable = &__zero_table_start__; pTable < &__zero_table_end__; ++pTable
+ 158:drivers/CMSIS/Include/cmsis_gcc.h ****     for(uint32_t i=0u; i<pTable->wlen; ++i) {
+ 159:drivers/CMSIS/Include/cmsis_gcc.h ****       pTable->dest[i] = 0u;
+ 160:drivers/CMSIS/Include/cmsis_gcc.h ****     }
+ 161:drivers/CMSIS/Include/cmsis_gcc.h ****   }
+ 162:drivers/CMSIS/Include/cmsis_gcc.h ****  
+ 163:drivers/CMSIS/Include/cmsis_gcc.h ****   _start();
+ 164:drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 165:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 166:drivers/CMSIS/Include/cmsis_gcc.h **** #define __PROGRAM_START           __cmsis_start
+ 167:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 168:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 169:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __INITIAL_SP
+ 170:drivers/CMSIS/Include/cmsis_gcc.h **** #define __INITIAL_SP              __StackTop
+ 171:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 172:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 173:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __STACK_LIMIT
+ 174:drivers/CMSIS/Include/cmsis_gcc.h **** #define __STACK_LIMIT             __StackLimit
+ 175:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 176:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 177:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __VECTOR_TABLE
+ 178:drivers/CMSIS/Include/cmsis_gcc.h **** #define __VECTOR_TABLE            __Vectors
+ 179:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 180:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 181:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __VECTOR_TABLE_ATTRIBUTE
+ 182:drivers/CMSIS/Include/cmsis_gcc.h **** #define __VECTOR_TABLE_ATTRIBUTE  __attribute((used, section(".vectors")))
+ 183:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 184:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 185:drivers/CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 186:drivers/CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 187:drivers/CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 188:drivers/CMSIS/Include/cmsis_gcc.h ****   @{
+ 189:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 190:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 191:drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 192:drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 193:drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 194:drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 195:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 18
+
+
+ 196:drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 197:drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 198:drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 199:drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 200:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 201:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 202:drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 203:drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 204:drivers/CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 205:drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 206:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 207:drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+ 438              		.loc 2 207 27 view .LVU95
+ 439              	.LBB5:
+ 208:drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 209:drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+ 440              		.loc 2 209 3 view .LVU96
+ 441              		.syntax unified
+ 442              	@ 209 "drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 443 004a 72B6     		cpsid i
+ 444              	@ 0 "" 2
+ 445              		.thumb
+ 446              		.syntax unified
+ 447              	.LBE5:
+ 448              	.LBE4:
+ 182:user_functions.c ****                 break;
+ 449              		.loc 1 182 17 view .LVU97
+ 450 004c FFF7FEFF 		bl	mass_erase_from_ram
+ 451              	.LVL30:
+ 452              	.L28:
+ 187:user_functions.c ****                 wait_for_op = false;
+ 453              		.loc 1 187 17 view .LVU98
+ 454 0050 0748     		ldr	r0, .L33+20
+ 455 0052 FFF7FEFF 		bl	puts
+ 456              	.LVL31:
+ 188:user_functions.c ****                 break;
+ 457              		.loc 1 188 17 view .LVU99
+ 189:user_functions.c **** 
+ 458              		.loc 1 189 17 view .LVU100
+ 170:user_functions.c ****     {
+ 459              		.loc 1 170 10 view .LVU101
+ 197:user_functions.c **** }
+ 460              		.loc 1 197 5 view .LVU102
+ 198:user_functions.c **** 
+ 461              		.loc 1 198 1 is_stmt 0 view .LVU103
+ 462 0056 0120     		movs	r0, #1
+ 463 0058 02B0     		add	sp, sp, #8
+ 464              	.LCFI5:
+ 465              		.cfi_def_cfa_offset 8
+ 466              		@ sp needed
+ 467 005a 10BD     		pop	{r4, pc}
+ 468              	.L34:
+ 469              		.align	2
+ 470              	.L33:
+ 471 005c 00000000 		.word	.LC6
+ 472 0060 30000000 		.word	.LC7
+ 473 0064 00000000 		.word	_impure_ptr
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 19
+
+
+ 474 0068 80000000 		.word	.LC8
+ 475 006c 84000000 		.word	.LC9
+ 476 0070 A0000000 		.word	.LC10
+ 477              		.cfi_endproc
+ 478              	.LFE139:
+ 480              		.section	.rodata.get_fan_speed.str1.4,"aMS",%progbits,1
+ 481              		.align	2
+ 482              	.LC11:
+ 483 0000 1B5B306D 		.ascii	"\033[0mStatus: %s\015\012\000"
+ 483      53746174 
+ 483      75733A20 
+ 483      25730D0A 
+ 483      00
+ 484 0011 000000   		.align	2
+ 485              	.LC12:
+ 486 0014 1B5B306D 		.ascii	"\033[0mActual speed: %d%%\015\012\000"
+ 486      41637475 
+ 486      616C2073 
+ 486      70656564 
+ 486      3A202564 
+ 487              		.section	.text.get_fan_speed,"ax",%progbits
+ 488              		.align	1
+ 489              		.syntax unified
+ 490              		.thumb
+ 491              		.thumb_func
+ 492              		.fpu fpv4-sp-d16
+ 494              	get_fan_speed:
+ 495              	.LVL32:
+ 496              	.LFB138:
+ 142:user_functions.c ****     uint8_t speed_actual = 0;
+ 497              		.loc 1 142 1 is_stmt 1 view -0
+ 498              		.cfi_startproc
+ 499              		@ args = 0, pretend = 0, frame = 8
+ 500              		@ frame_needed = 0, uses_anonymous_args = 0
+ 142:user_functions.c ****     uint8_t speed_actual = 0;
+ 501              		.loc 1 142 1 is_stmt 0 view .LVU105
+ 502 0000 10B5     		push	{r4, lr}
+ 503              	.LCFI6:
+ 504              		.cfi_def_cfa_offset 8
+ 505              		.cfi_offset 4, -8
+ 506              		.cfi_offset 14, -4
+ 507 0002 82B0     		sub	sp, sp, #8
+ 508              	.LCFI7:
+ 509              		.cfi_def_cfa_offset 16
+ 143:user_functions.c ****     bool res;
+ 510              		.loc 1 143 5 is_stmt 1 view .LVU106
+ 143:user_functions.c ****     bool res;
+ 511              		.loc 1 143 13 is_stmt 0 view .LVU107
+ 512 0004 0023     		movs	r3, #0
+ 513 0006 8DF80730 		strb	r3, [sp, #7]
+ 144:user_functions.c **** 
+ 514              		.loc 1 144 5 is_stmt 1 view .LVU108
+ 146:user_functions.c ****     printf(TC_RESET"Status: %s\r\n", get_status(res));
+ 515              		.loc 1 146 5 view .LVU109
+ 146:user_functions.c ****     printf(TC_RESET"Status: %s\r\n", get_status(res));
+ 516              		.loc 1 146 11 is_stmt 0 view .LVU110
+ 517 000a 0DF10700 		add	r0, sp, #7
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 20
+
+
+ 518              	.LVL33:
+ 146:user_functions.c ****     printf(TC_RESET"Status: %s\r\n", get_status(res));
+ 519              		.loc 1 146 11 view .LVU111
+ 520 000e FFF7FEFF 		bl	MAX6650_GetSpeed
+ 521              	.LVL34:
+ 522 0012 0446     		mov	r4, r0
+ 523              	.LVL35:
+ 147:user_functions.c **** 
+ 524              		.loc 1 147 5 is_stmt 1 view .LVU112
+ 525 0014 FFF7FEFF 		bl	get_status
+ 526              	.LVL36:
+ 527 0018 0146     		mov	r1, r0
+ 528 001a 0648     		ldr	r0, .L39
+ 529 001c FFF7FEFF 		bl	printf
+ 530              	.LVL37:
+ 149:user_functions.c ****     {
+ 531              		.loc 1 149 5 view .LVU113
+ 149:user_functions.c ****     {
+ 532              		.loc 1 149 7 is_stmt 0 view .LVU114
+ 533 0020 14B9     		cbnz	r4, .L38
+ 534              	.L36:
+ 154:user_functions.c **** }
+ 535              		.loc 1 154 5 is_stmt 1 view .LVU115
+ 155:user_functions.c **** 
+ 536              		.loc 1 155 1 is_stmt 0 view .LVU116
+ 537 0022 2046     		mov	r0, r4
+ 538 0024 02B0     		add	sp, sp, #8
+ 539              	.LCFI8:
+ 540              		.cfi_remember_state
+ 541              		.cfi_def_cfa_offset 8
+ 542              		@ sp needed
+ 543 0026 10BD     		pop	{r4, pc}
+ 544              	.LVL38:
+ 545              	.L38:
+ 546              	.LCFI9:
+ 547              		.cfi_restore_state
+ 151:user_functions.c ****     }
+ 548              		.loc 1 151 9 is_stmt 1 view .LVU117
+ 549 0028 9DF80710 		ldrb	r1, [sp, #7]	@ zero_extendqisi2
+ 550 002c 0248     		ldr	r0, .L39+4
+ 551 002e FFF7FEFF 		bl	printf
+ 552              	.LVL39:
+ 553 0032 F6E7     		b	.L36
+ 554              	.L40:
+ 555              		.align	2
+ 556              	.L39:
+ 557 0034 00000000 		.word	.LC11
+ 558 0038 14000000 		.word	.LC12
+ 559              		.cfi_endproc
+ 560              	.LFE138:
+ 562              		.section	.rodata.set_fan_speed.str1.4,"aMS",%progbits,1
+ 563              		.align	2
+ 564              	.LC13:
+ 565 0000 1B5B306D 		.ascii	"\033[0mSet    speed: %d%%\015\012\000"
+ 565      53657420 
+ 565      20202073 
+ 565      70656564 
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 21
+
+
+ 565      3A202564 
+ 566              		.section	.text.set_fan_speed,"ax",%progbits
+ 567              		.align	1
+ 568              		.syntax unified
+ 569              		.thumb
+ 570              		.thumb_func
+ 571              		.fpu fpv4-sp-d16
+ 573              	set_fan_speed:
+ 574              	.LVL40:
+ 575              	.LFB137:
+ 121:user_functions.c ****     uint8_t speed_actual = 0;
+ 576              		.loc 1 121 1 view -0
+ 577              		.cfi_startproc
+ 578              		@ args = 0, pretend = 0, frame = 8
+ 579              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121:user_functions.c ****     uint8_t speed_actual = 0;
+ 580              		.loc 1 121 1 is_stmt 0 view .LVU119
+ 581 0000 30B5     		push	{r4, r5, lr}
+ 582              	.LCFI10:
+ 583              		.cfi_def_cfa_offset 12
+ 584              		.cfi_offset 4, -12
+ 585              		.cfi_offset 5, -8
+ 586              		.cfi_offset 14, -4
+ 587 0002 83B0     		sub	sp, sp, #12
+ 588              	.LCFI11:
+ 589              		.cfi_def_cfa_offset 24
+ 590 0004 0546     		mov	r5, r0
+ 122:user_functions.c ****     bool res;
+ 591              		.loc 1 122 5 is_stmt 1 view .LVU120
+ 122:user_functions.c ****     bool res;
+ 592              		.loc 1 122 13 is_stmt 0 view .LVU121
+ 593 0006 0023     		movs	r3, #0
+ 594 0008 8DF80730 		strb	r3, [sp, #7]
+ 123:user_functions.c **** 
+ 595              		.loc 1 123 5 is_stmt 1 view .LVU122
+ 125:user_functions.c ****     printf(TC_RESET"Status: %s\r\n", get_status(res));
+ 596              		.loc 1 125 5 view .LVU123
+ 125:user_functions.c ****     printf(TC_RESET"Status: %s\r\n", get_status(res));
+ 597              		.loc 1 125 11 is_stmt 0 view .LVU124
+ 598 000c 0DF10701 		add	r1, sp, #7
+ 599 0010 C0B2     		uxtb	r0, r0
+ 600              	.LVL41:
+ 125:user_functions.c ****     printf(TC_RESET"Status: %s\r\n", get_status(res));
+ 601              		.loc 1 125 11 view .LVU125
+ 602 0012 FFF7FEFF 		bl	MAX6650_SetSpeed
+ 603              	.LVL42:
+ 604 0016 0446     		mov	r4, r0
+ 605              	.LVL43:
+ 126:user_functions.c **** 
+ 606              		.loc 1 126 5 is_stmt 1 view .LVU126
+ 607 0018 FFF7FEFF 		bl	get_status
+ 608              	.LVL44:
+ 609 001c 0146     		mov	r1, r0
+ 610 001e 0848     		ldr	r0, .L45
+ 611 0020 FFF7FEFF 		bl	printf
+ 612              	.LVL45:
+ 128:user_functions.c ****     {
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 22
+
+
+ 613              		.loc 1 128 5 view .LVU127
+ 128:user_functions.c ****     {
+ 614              		.loc 1 128 7 is_stmt 0 view .LVU128
+ 615 0024 14B9     		cbnz	r4, .L44
+ 616              	.L42:
+ 134:user_functions.c **** }
+ 617              		.loc 1 134 5 is_stmt 1 view .LVU129
+ 135:user_functions.c **** 
+ 618              		.loc 1 135 1 is_stmt 0 view .LVU130
+ 619 0026 2046     		mov	r0, r4
+ 620 0028 03B0     		add	sp, sp, #12
+ 621              	.LCFI12:
+ 622              		.cfi_remember_state
+ 623              		.cfi_def_cfa_offset 12
+ 624              		@ sp needed
+ 625 002a 30BD     		pop	{r4, r5, pc}
+ 626              	.LVL46:
+ 627              	.L44:
+ 628              	.LCFI13:
+ 629              		.cfi_restore_state
+ 130:user_functions.c ****         printf(TC_RESET"Actual speed: %d%%\r\n", speed_actual);
+ 630              		.loc 1 130 9 is_stmt 1 view .LVU131
+ 631 002c 2946     		mov	r1, r5
+ 632 002e 0548     		ldr	r0, .L45+4
+ 633 0030 FFF7FEFF 		bl	printf
+ 634              	.LVL47:
+ 131:user_functions.c ****     }
+ 635              		.loc 1 131 9 view .LVU132
+ 636 0034 9DF80710 		ldrb	r1, [sp, #7]	@ zero_extendqisi2
+ 637 0038 0348     		ldr	r0, .L45+8
+ 638 003a FFF7FEFF 		bl	printf
+ 639              	.LVL48:
+ 640 003e F2E7     		b	.L42
+ 641              	.L46:
+ 642              		.align	2
+ 643              	.L45:
+ 644 0040 00000000 		.word	.LC11
+ 645 0044 00000000 		.word	.LC13
+ 646 0048 14000000 		.word	.LC12
+ 647              		.cfi_endproc
+ 648              	.LFE137:
+ 650              		.section	.text.UserFunctions_Init,"ax",%progbits
+ 651              		.align	1
+ 652              		.global	UserFunctions_Init
+ 653              		.syntax unified
+ 654              		.thumb
+ 655              		.thumb_func
+ 656              		.fpu fpv4-sp-d16
+ 658              	UserFunctions_Init:
+ 659              	.LFB142:
+ 240:user_functions.c **** 
+ 241:user_functions.c **** 
+ 242:user_functions.c **** bool UserFunctions_Init(void)
+ 243:user_functions.c **** {
+ 660              		.loc 1 243 1 view -0
+ 661              		.cfi_startproc
+ 662              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 23
+
+
+ 663              		@ frame_needed = 0, uses_anonymous_args = 0
+ 664 0000 08B5     		push	{r3, lr}
+ 665              	.LCFI14:
+ 666              		.cfi_def_cfa_offset 8
+ 667              		.cfi_offset 3, -8
+ 668              		.cfi_offset 14, -4
+ 244:user_functions.c ****     bool res;
+ 669              		.loc 1 244 5 view .LVU134
+ 245:user_functions.c **** 
+ 246:user_functions.c ****     res = max6650_init();
+ 670              		.loc 1 246 5 view .LVU135
+ 671              		.loc 1 246 11 is_stmt 0 view .LVU136
+ 672 0002 FFF7FEFF 		bl	max6650_init
+ 673              	.LVL49:
+ 247:user_functions.c **** 
+ 248:user_functions.c ****     return res;
+ 674              		.loc 1 248 5 is_stmt 1 view .LVU137
+ 249:user_functions.c **** }
+ 675              		.loc 1 249 1 is_stmt 0 view .LVU138
+ 676 0006 08BD     		pop	{r3, pc}
+ 677              		.cfi_endproc
+ 678              	.LFE142:
+ 680              		.section	.text.UserFunctions_GetFuncCount,"ax",%progbits
+ 681              		.align	1
+ 682              		.global	UserFunctions_GetFuncCount
+ 683              		.syntax unified
+ 684              		.thumb
+ 685              		.thumb_func
+ 686              		.fpu fpv4-sp-d16
+ 688              	UserFunctions_GetFuncCount:
+ 689              	.LFB143:
+ 250:user_functions.c **** 
+ 251:user_functions.c **** 
+ 252:user_functions.c **** inline uint8_t UserFunctions_GetFuncCount()
+ 253:user_functions.c **** {
+ 690              		.loc 1 253 1 is_stmt 1 view -0
+ 691              		.cfi_startproc
+ 692              		@ args = 0, pretend = 0, frame = 0
+ 693              		@ frame_needed = 0, uses_anonymous_args = 0
+ 694              		@ link register save eliminated.
+ 254:user_functions.c ****     return COMMANDS_COUNT;
+ 695              		.loc 1 254 5 view .LVU140
+ 255:user_functions.c **** }
+ 696              		.loc 1 255 1 is_stmt 0 view .LVU141
+ 697 0000 0420     		movs	r0, #4
+ 698 0002 7047     		bx	lr
+ 699              		.cfi_endproc
+ 700              	.LFE143:
+ 702              		.section	.text.UserFunctions_GetFunc,"ax",%progbits
+ 703              		.align	1
+ 704              		.global	UserFunctions_GetFunc
+ 705              		.syntax unified
+ 706              		.thumb
+ 707              		.thumb_func
+ 708              		.fpu fpv4-sp-d16
+ 710              	UserFunctions_GetFunc:
+ 711              	.LVL50:
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 24
+
+
+ 712              	.LFB144:
+ 256:user_functions.c **** 
+ 257:user_functions.c **** 
+ 258:user_functions.c **** Command_t* UserFunctions_GetFunc(uint8_t item)
+ 259:user_functions.c **** {
+ 713              		.loc 1 259 1 is_stmt 1 view -0
+ 714              		.cfi_startproc
+ 715              		@ args = 0, pretend = 0, frame = 0
+ 716              		@ frame_needed = 0, uses_anonymous_args = 0
+ 717              		@ link register save eliminated.
+ 260:user_functions.c ****     if(item < COMMANDS_COUNT)
+ 718              		.loc 1 260 5 view .LVU143
+ 719              		.loc 1 260 7 is_stmt 0 view .LVU144
+ 720 0000 0328     		cmp	r0, #3
+ 721 0002 05D8     		bhi	.L52
+ 261:user_functions.c ****     {
+ 262:user_functions.c ****         return commands_list+item;
+ 722              		.loc 1 262 9 is_stmt 1 view .LVU145
+ 723              		.loc 1 262 29 is_stmt 0 view .LVU146
+ 724 0004 00EB4000 		add	r0, r0, r0, lsl #1
+ 725              	.LVL51:
+ 726              		.loc 1 262 29 view .LVU147
+ 727 0008 024B     		ldr	r3, .L53
+ 728 000a 03EB8000 		add	r0, r3, r0, lsl #2
+ 729 000e 7047     		bx	lr
+ 730              	.LVL52:
+ 731              	.L52:
+ 263:user_functions.c ****     }
+ 264:user_functions.c ****     else
+ 265:user_functions.c ****     {
+ 266:user_functions.c ****         return NULL;
+ 732              		.loc 1 266 16 view .LVU148
+ 733 0010 0020     		movs	r0, #0
+ 734              	.LVL53:
+ 267:user_functions.c ****     }
+ 268:user_functions.c **** }
+ 735              		.loc 1 268 1 view .LVU149
+ 736 0012 7047     		bx	lr
+ 737              	.L54:
+ 738              		.align	2
+ 739              	.L53:
+ 740 0014 00000000 		.word	.LANCHOR2
+ 741              		.cfi_endproc
+ 742              	.LFE144:
+ 744              		.section	.rodata.str1.4
+ 745 007b 00       		.align	2
+ 746              	.LC14:
+ 747 007c 7365745F 		.ascii	"set_fan_speed\000"
+ 747      66616E5F 
+ 747      73706565 
+ 747      6400
+ 748 008a 0000     		.align	2
+ 749              	.LC15:
+ 750 008c 2C737065 		.ascii	",speed<0..100>\000"
+ 750      65643C30 
+ 750      2E2E3130 
+ 750      303E00
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 25
+
+
+ 751 009b 00       		.align	2
+ 752              	.LC16:
+ 753 009c 6765745F 		.ascii	"get_fan_speed\000"
+ 753      66616E5F 
+ 753      73706565 
+ 753      6400
+ 754 00aa 0000     		.align	2
+ 755              	.LC17:
+ 756 00ac 00       		.ascii	"\000"
+ 757 00ad 000000   		.align	2
+ 758              	.LC18:
+ 759 00b0 73656C66 		.ascii	"self_erase\000"
+ 759      5F657261 
+ 759      736500
+ 760 00bb 00       		.align	2
+ 761              	.LC19:
+ 762 00bc 201B5B33 		.ascii	" \033[31m*Warning: this operation is irreversible\033"
+ 762      316D2A57 
+ 762      61726E69 
+ 762      6E673A20 
+ 762      74686973 
+ 763 00eb 5B306D00 		.ascii	"[0m\000"
+ 764 00ef 00       		.align	2
+ 765              	.LC20:
+ 766 00f0 68656C70 		.ascii	"help\000"
+ 766      00
+ 767              		.section	.bss.max6650_config,"aw",%nobits
+ 768              		.align	2
+ 769              		.set	.LANCHOR0,. + 0
+ 772              	max6650_config:
+ 773 0000 00000000 		.space	4
+ 774              		.section	.data.commands_list,"aw"
+ 775              		.align	2
+ 776              		.set	.LANCHOR2,. + 0
+ 779              	commands_list:
+ 780 0000 00000000 		.word	set_fan_speed
+ 781 0004 7C000000 		.word	.LC14
+ 782 0008 8C000000 		.word	.LC15
+ 783 000c 00000000 		.word	get_fan_speed
+ 784 0010 9C000000 		.word	.LC16
+ 785 0014 AC000000 		.word	.LC17
+ 786 0018 00000000 		.word	self_erase
+ 787 001c B0000000 		.word	.LC18
+ 788 0020 BC000000 		.word	.LC19
+ 789 0024 00000000 		.word	help
+ 790 0028 F0000000 		.word	.LC20
+ 791 002c AC000000 		.word	.LC17
+ 792              		.section	.rodata.max6650_i2c_ext_interface,"a"
+ 793              		.align	2
+ 794              		.set	.LANCHOR1,. + 0
+ 797              	max6650_i2c_ext_interface:
+ 798 0000 00000000 		.word	I2C_API_Init
+ 799 0004 00000000 		.word	I2C_API_ReadMultiple
+ 800 0008 00000000 		.word	I2C_API_WriteMultiple
+ 801              		.text
+ 802              	.Letext0:
+ 803              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.07\\lib\\gcc\\arm-none-eabi\\10.3.1\\include\\std
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 26
+
+
+ 804              		.file 4 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\machine\\_default_typ
+ 805              		.file 5 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\sys\\_types.h"
+ 806              		.file 6 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\sys\\reent.h"
+ 807              		.file 7 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\sys\\lock.h"
+ 808              		.file 8 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 809              		.file 9 "../inc/user_functions.h"
+ 810              		.file 10 "drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l475xx.h"
+ 811              		.file 11 "../libs/max6650/inc/max6650.h"
+ 812              		.file 12 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\stdlib.h"
+ 813              		.file 13 "../inc/uart_api.h"
+ 814              		.file 14 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\stdio.h"
+ 815              		.file 15 "<built-in>"
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 27
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 user_functions.c
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:18     .rodata.get_status.str1.4:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:25     .text.get_status:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:32     .text.get_status:00000000 get_status
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:60     .text.get_status:0000000c $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:66     .rodata.max6650_init.str1.4:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:73     .text.max6650_init:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:79     .text.max6650_init:00000000 max6650_init
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:159    .text.max6650_init:00000044 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:167    .text.help:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:173    .text.help:00000000 help
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:197    .rodata.str1.4:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:206    .RamFunc:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:212    .RamFunc:00000000 mass_erase_from_ram
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:330    .RamFunc:0000007c $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:338    .rodata.self_erase.str1.4:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:356    .text.self_erase:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:362    .text.self_erase:00000000 self_erase
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:471    .text.self_erase:0000005c $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:481    .rodata.get_fan_speed.str1.4:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:488    .text.get_fan_speed:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:494    .text.get_fan_speed:00000000 get_fan_speed
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:557    .text.get_fan_speed:00000034 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:563    .rodata.set_fan_speed.str1.4:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:567    .text.set_fan_speed:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:573    .text.set_fan_speed:00000000 set_fan_speed
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:644    .text.set_fan_speed:00000040 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:651    .text.UserFunctions_Init:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:658    .text.UserFunctions_Init:00000000 UserFunctions_Init
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:681    .text.UserFunctions_GetFuncCount:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:688    .text.UserFunctions_GetFuncCount:00000000 UserFunctions_GetFuncCount
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:703    .text.UserFunctions_GetFunc:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:710    .text.UserFunctions_GetFunc:00000000 UserFunctions_GetFunc
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:740    .text.UserFunctions_GetFunc:00000014 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:768    .bss.max6650_config:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:772    .bss.max6650_config:00000000 max6650_config
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:775    .data.commands_list:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:779    .data.commands_list:00000000 commands_list
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:793    .rodata.max6650_i2c_ext_interface:00000000 $d
+C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s:797    .rodata.max6650_i2c_ext_interface:00000000 max6650_i2c_ext_interface
+
+UNDEFINED SYMBOLS
+malloc
+MAX6650_Init
+puts
+UartAPI_PrintMenu
+UartAPI_SendString
+UartAPI_GetChar
+UartAPI_SendChar
+printf
+fflush
+scanf
+_impure_ptr
+MAX6650_GetSpeed
+MAX6650_SetSpeed
+I2C_API_Init
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccwAdmgL.s 			page 28
+
+
+I2C_API_ReadMultiple
+I2C_API_WriteMultiple

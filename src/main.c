@@ -24,7 +24,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
 
-  I2CAPI_Init(i2c_fast_speed);
+  I2C_API_Init(i2c_fast_speed);
   UartAPI_Init();
 
   /* Don't use buffer for stdin */

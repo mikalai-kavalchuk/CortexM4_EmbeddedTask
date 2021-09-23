@@ -1,0 +1,1056 @@
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"i2c_api.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.I2Cx_Init,"ax",%progbits
+  18              		.align	1
+  19              		.arch armv7e-m
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  23              		.fpu fpv4-sp-d16
+  25              	I2Cx_Init:
+  26              	.LVL0:
+  27              	.LFB132:
+  28              		.file 1 "i2c_api.c"
+   1:i2c_api.c     **** #include "i2c_api.h"
+   2:i2c_api.c     **** #include "error.h"
+   3:i2c_api.c     **** 
+   4:i2c_api.c     **** I2C_HandleTypeDef hi2c2;
+   5:i2c_api.c     **** 
+   6:i2c_api.c     **** 
+   7:i2c_api.c     **** /** @defgroup I2C LOW LEVEL Private Function Prototypes
+   8:i2c_api.c     ****   * @{
+   9:i2c_api.c     ****   */
+  10:i2c_api.c     **** static void I2Cx_Init(I2C_HandleTypeDef *i2c_handler);
+  11:i2c_api.c     **** static void I2Cx_DeInit(I2C_HandleTypeDef *i2c_handler);
+  12:i2c_api.c     **** static HAL_StatusTypeDef I2Cx_ReadMultiple(I2C_HandleTypeDef *i2c_handler, uint8_t Addr, uint16_t R
+  13:i2c_api.c     **** static HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler, uint8_t Addr, uint16_t 
+  14:i2c_api.c     **** static HAL_StatusTypeDef I2Cx_IsDeviceReady(I2C_HandleTypeDef *i2c_handler, uint16_t DevAddress, ui
+  15:i2c_api.c     **** static void I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr);
+  16:i2c_api.c     **** /**
+  17:i2c_api.c     ****   * @}
+  18:i2c_api.c     ****   */
+  19:i2c_api.c     **** 
+  20:i2c_api.c     **** 
+  21:i2c_api.c     **** /**
+  22:i2c_api.c     ****   * @brief I2C2 Initialization Function
+  23:i2c_api.c     ****   * @param None
+  24:i2c_api.c     ****   * @retval None
+  25:i2c_api.c     ****   */
+  26:i2c_api.c     **** static void I2Cx_Init(I2C_HandleTypeDef *i2c_handler)
+  27:i2c_api.c     **** {
+  29              		.loc 1 27 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 2
+
+
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 27 1 is_stmt 0 view .LVU1
+  34 0000 10B5     		push	{r4, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 4, -8
+  38              		.cfi_offset 14, -4
+  39 0002 0446     		mov	r4, r0
+  28:i2c_api.c     ****   i2c_handler->Instance = I2C2;
+  40              		.loc 1 28 3 is_stmt 1 view .LVU2
+  41              		.loc 1 28 25 is_stmt 0 view .LVU3
+  42 0004 114B     		ldr	r3, .L9
+  43 0006 0360     		str	r3, [r0]
+  29:i2c_api.c     ****   i2c_handler->Init.Timing = 0x10909CEC;
+  44              		.loc 1 29 3 is_stmt 1 view .LVU4
+  45              		.loc 1 29 28 is_stmt 0 view .LVU5
+  46 0008 114B     		ldr	r3, .L9+4
+  47 000a 4360     		str	r3, [r0, #4]
+  30:i2c_api.c     ****   i2c_handler->Init.OwnAddress1 = 0;
+  48              		.loc 1 30 3 is_stmt 1 view .LVU6
+  49              		.loc 1 30 33 is_stmt 0 view .LVU7
+  50 000c 0023     		movs	r3, #0
+  51 000e 8360     		str	r3, [r0, #8]
+  31:i2c_api.c     ****   i2c_handler->Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  52              		.loc 1 31 3 is_stmt 1 view .LVU8
+  53              		.loc 1 31 36 is_stmt 0 view .LVU9
+  54 0010 0122     		movs	r2, #1
+  55 0012 C260     		str	r2, [r0, #12]
+  32:i2c_api.c     ****   i2c_handler->Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  56              		.loc 1 32 3 is_stmt 1 view .LVU10
+  57              		.loc 1 32 37 is_stmt 0 view .LVU11
+  58 0014 0361     		str	r3, [r0, #16]
+  33:i2c_api.c     ****   i2c_handler->Init.OwnAddress2 = 0;
+  59              		.loc 1 33 3 is_stmt 1 view .LVU12
+  60              		.loc 1 33 33 is_stmt 0 view .LVU13
+  61 0016 4361     		str	r3, [r0, #20]
+  34:i2c_api.c     ****   i2c_handler->Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  62              		.loc 1 34 3 is_stmt 1 view .LVU14
+  63              		.loc 1 34 38 is_stmt 0 view .LVU15
+  64 0018 8361     		str	r3, [r0, #24]
+  35:i2c_api.c     ****   i2c_handler->Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  65              		.loc 1 35 3 is_stmt 1 view .LVU16
+  66              		.loc 1 35 37 is_stmt 0 view .LVU17
+  67 001a C361     		str	r3, [r0, #28]
+  36:i2c_api.c     ****   i2c_handler->Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  68              		.loc 1 36 3 is_stmt 1 view .LVU18
+  69              		.loc 1 36 35 is_stmt 0 view .LVU19
+  70 001c 0362     		str	r3, [r0, #32]
+  37:i2c_api.c     ****   if (HAL_I2C_Init(i2c_handler) != HAL_OK)
+  71              		.loc 1 37 3 is_stmt 1 view .LVU20
+  72              		.loc 1 37 7 is_stmt 0 view .LVU21
+  73 001e FFF7FEFF 		bl	HAL_I2C_Init
+  74              	.LVL1:
+  75              		.loc 1 37 6 view .LVU22
+  76 0022 50B9     		cbnz	r0, .L6
+  77              	.L2:
+  38:i2c_api.c     ****   {
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 3
+
+
+  39:i2c_api.c     ****     Error_Handler();
+  40:i2c_api.c     ****   }
+  41:i2c_api.c     ****   /** Configure Analogue filter
+  42:i2c_api.c     ****   */
+  43:i2c_api.c     ****   if (HAL_I2CEx_ConfigAnalogFilter(i2c_handler, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  78              		.loc 1 43 3 is_stmt 1 view .LVU23
+  79              		.loc 1 43 7 is_stmt 0 view .LVU24
+  80 0024 0021     		movs	r1, #0
+  81 0026 2046     		mov	r0, r4
+  82 0028 FFF7FEFF 		bl	HAL_I2CEx_ConfigAnalogFilter
+  83              	.LVL2:
+  84              		.loc 1 43 6 view .LVU25
+  85 002c 40B9     		cbnz	r0, .L7
+  86              	.L3:
+  44:i2c_api.c     ****   {
+  45:i2c_api.c     ****     Error_Handler();
+  46:i2c_api.c     ****   }
+  47:i2c_api.c     ****   /** Configure Digital filter
+  48:i2c_api.c     ****   */
+  49:i2c_api.c     ****   if (HAL_I2CEx_ConfigDigitalFilter(i2c_handler, 0) != HAL_OK)
+  87              		.loc 1 49 3 is_stmt 1 view .LVU26
+  88              		.loc 1 49 7 is_stmt 0 view .LVU27
+  89 002e 0021     		movs	r1, #0
+  90 0030 2046     		mov	r0, r4
+  91 0032 FFF7FEFF 		bl	HAL_I2CEx_ConfigDigitalFilter
+  92              	.LVL3:
+  93              		.loc 1 49 6 view .LVU28
+  94 0036 30B9     		cbnz	r0, .L8
+  95              	.L1:
+  50:i2c_api.c     ****   {
+  51:i2c_api.c     ****     Error_Handler();
+  52:i2c_api.c     ****   }
+  53:i2c_api.c     **** }
+  96              		.loc 1 53 1 view .LVU29
+  97 0038 10BD     		pop	{r4, pc}
+  98              	.LVL4:
+  99              	.L6:
+  39:i2c_api.c     ****   }
+ 100              		.loc 1 39 5 is_stmt 1 view .LVU30
+ 101 003a FFF7FEFF 		bl	Error_Handler
+ 102              	.LVL5:
+ 103 003e F1E7     		b	.L2
+ 104              	.L7:
+  45:i2c_api.c     ****   }
+ 105              		.loc 1 45 5 view .LVU31
+ 106 0040 FFF7FEFF 		bl	Error_Handler
+ 107              	.LVL6:
+ 108 0044 F3E7     		b	.L3
+ 109              	.L8:
+  51:i2c_api.c     ****   }
+ 110              		.loc 1 51 5 view .LVU32
+ 111 0046 FFF7FEFF 		bl	Error_Handler
+ 112              	.LVL7:
+ 113              		.loc 1 53 1 is_stmt 0 view .LVU33
+ 114 004a F5E7     		b	.L1
+ 115              	.L10:
+ 116              		.align	2
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 4
+
+
+ 117              	.L9:
+ 118 004c 00580040 		.word	1073764352
+ 119 0050 EC9C9010 		.word	277912812
+ 120              		.cfi_endproc
+ 121              	.LFE132:
+ 123              		.section	.text.I2Cx_DeInit,"ax",%progbits
+ 124              		.align	1
+ 125              		.syntax unified
+ 126              		.thumb
+ 127              		.thumb_func
+ 128              		.fpu fpv4-sp-d16
+ 130              	I2Cx_DeInit:
+ 131              	.LVL8:
+ 132              	.LFB133:
+  54:i2c_api.c     **** 
+  55:i2c_api.c     **** 
+  56:i2c_api.c     **** /**
+  57:i2c_api.c     ****   * @brief  DeInitializes I2C HAL.
+  58:i2c_api.c     ****   * @param  i2c_handler : I2C handler
+  59:i2c_api.c     ****   * @retval None
+  60:i2c_api.c     ****   */
+  61:i2c_api.c     **** static void I2Cx_DeInit(I2C_HandleTypeDef *i2c_handler)
+  62:i2c_api.c     **** {
+ 133              		.loc 1 62 1 is_stmt 1 view -0
+ 134              		.cfi_startproc
+ 135              		@ args = 0, pretend = 0, frame = 0
+ 136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137              		.loc 1 62 1 is_stmt 0 view .LVU35
+ 138 0000 08B5     		push	{r3, lr}
+ 139              	.LCFI1:
+ 140              		.cfi_def_cfa_offset 8
+ 141              		.cfi_offset 3, -8
+ 142              		.cfi_offset 14, -4
+  63:i2c_api.c     ****     /* DeInit the I2C */
+  64:i2c_api.c     ****   HAL_I2C_DeInit(i2c_handler);
+ 143              		.loc 1 64 3 is_stmt 1 view .LVU36
+ 144 0002 FFF7FEFF 		bl	HAL_I2C_DeInit
+ 145              	.LVL9:
+  65:i2c_api.c     **** }
+ 146              		.loc 1 65 1 is_stmt 0 view .LVU37
+ 147 0006 08BD     		pop	{r3, pc}
+ 148              		.cfi_endproc
+ 149              	.LFE133:
+ 151              		.section	.text.I2Cx_Error,"ax",%progbits
+ 152              		.align	1
+ 153              		.syntax unified
+ 154              		.thumb
+ 155              		.thumb_func
+ 156              		.fpu fpv4-sp-d16
+ 158              	I2Cx_Error:
+ 159              	.LVL10:
+ 160              	.LFB137:
+  66:i2c_api.c     **** 
+  67:i2c_api.c     **** 
+  68:i2c_api.c     **** /**
+  69:i2c_api.c     ****   * @brief  Reads multiple data.
+  70:i2c_api.c     ****   * @param  i2c_handler : I2C handler
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 5
+
+
+  71:i2c_api.c     ****   * @param  Addr: I2C address
+  72:i2c_api.c     ****   * @param  Reg: Reg address
+  73:i2c_api.c     ****   * @param  MemAddress: memory address
+  74:i2c_api.c     ****   * @param  Buffer: Pointer to data buffer
+  75:i2c_api.c     ****   * @param  Length: Length of the data
+  76:i2c_api.c     ****   * @retval HAL status
+  77:i2c_api.c     ****   */
+  78:i2c_api.c     **** static HAL_StatusTypeDef I2Cx_ReadMultiple(I2C_HandleTypeDef *i2c_handler, uint8_t Addr, uint16_t R
+  79:i2c_api.c     **** {
+  80:i2c_api.c     ****   HAL_StatusTypeDef status = HAL_OK;
+  81:i2c_api.c     **** 
+  82:i2c_api.c     ****   status = HAL_I2C_Mem_Read(i2c_handler, Addr, (uint16_t)Reg, MemAddress, Buffer, Length, 1000);
+  83:i2c_api.c     **** 
+  84:i2c_api.c     ****   /* Check the communication status */
+  85:i2c_api.c     ****   if(status != HAL_OK)
+  86:i2c_api.c     ****   {
+  87:i2c_api.c     ****     /* I2C error occured */
+  88:i2c_api.c     ****     I2Cx_Error(i2c_handler, Addr);
+  89:i2c_api.c     ****   }
+  90:i2c_api.c     ****   return status;
+  91:i2c_api.c     **** }
+  92:i2c_api.c     **** 
+  93:i2c_api.c     **** 
+  94:i2c_api.c     **** /**
+  95:i2c_api.c     ****   * @brief  Writes a value in a register of the device through BUS in using DMA mode.
+  96:i2c_api.c     ****   * @param  i2c_handler : I2C handler
+  97:i2c_api.c     ****   * @param  Addr: Device address on BUS Bus.
+  98:i2c_api.c     ****   * @param  Reg: The target register address to write
+  99:i2c_api.c     ****   * @param  MemAddress: memory address
+ 100:i2c_api.c     ****   * @param  Buffer: The target register value to be written
+ 101:i2c_api.c     ****   * @param  Length: buffer size to be written
+ 102:i2c_api.c     ****   * @retval HAL status
+ 103:i2c_api.c     ****   */
+ 104:i2c_api.c     **** static HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler, uint8_t Addr, uint16_t 
+ 105:i2c_api.c     **** {
+ 106:i2c_api.c     ****   HAL_StatusTypeDef status = HAL_OK;
+ 107:i2c_api.c     **** 
+ 108:i2c_api.c     ****   status = HAL_I2C_Mem_Write(i2c_handler, Addr, (uint16_t)Reg, MemAddress, Buffer, Length, 1000);
+ 109:i2c_api.c     **** 
+ 110:i2c_api.c     ****   /* Check the communication status */
+ 111:i2c_api.c     ****   if(status != HAL_OK)
+ 112:i2c_api.c     ****   {
+ 113:i2c_api.c     ****     /* Re-Initiaize the I2C Bus */
+ 114:i2c_api.c     ****     I2Cx_Error(i2c_handler, Addr);
+ 115:i2c_api.c     ****   }
+ 116:i2c_api.c     ****   return status;
+ 117:i2c_api.c     **** }
+ 118:i2c_api.c     **** 
+ 119:i2c_api.c     **** 
+ 120:i2c_api.c     **** /**
+ 121:i2c_api.c     ****   * @brief  Checks if target device is ready for communication.
+ 122:i2c_api.c     ****   * @note   This function is used with Memory devices
+ 123:i2c_api.c     ****   * @param  i2c_handler : I2C handler
+ 124:i2c_api.c     ****   * @param  DevAddress: Target device address
+ 125:i2c_api.c     ****   * @param  Trials: Number of trials
+ 126:i2c_api.c     ****   * @retval HAL status
+ 127:i2c_api.c     ****   */
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 6
+
+
+ 128:i2c_api.c     **** static HAL_StatusTypeDef I2Cx_IsDeviceReady(I2C_HandleTypeDef *i2c_handler, uint16_t DevAddress, ui
+ 129:i2c_api.c     **** {
+ 130:i2c_api.c     ****   return (HAL_I2C_IsDeviceReady(i2c_handler, DevAddress, Trials, 1000));
+ 131:i2c_api.c     **** }
+ 132:i2c_api.c     **** 
+ 133:i2c_api.c     **** 
+ 134:i2c_api.c     **** /**
+ 135:i2c_api.c     ****   * @brief  Manages error callback by re-initializing I2C.
+ 136:i2c_api.c     ****   * @param  i2c_handler : I2C handler
+ 137:i2c_api.c     ****   * @param  Addr: I2C Address
+ 138:i2c_api.c     ****   * @retval None
+ 139:i2c_api.c     ****   */
+ 140:i2c_api.c     **** static void I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr)
+ 141:i2c_api.c     **** {
+ 161              		.loc 1 141 1 is_stmt 1 view -0
+ 162              		.cfi_startproc
+ 163              		@ args = 0, pretend = 0, frame = 0
+ 164              		@ frame_needed = 0, uses_anonymous_args = 0
+ 165              		.loc 1 141 1 is_stmt 0 view .LVU39
+ 166 0000 10B5     		push	{r4, lr}
+ 167              	.LCFI2:
+ 168              		.cfi_def_cfa_offset 8
+ 169              		.cfi_offset 4, -8
+ 170              		.cfi_offset 14, -4
+ 171 0002 0446     		mov	r4, r0
+ 142:i2c_api.c     ****   /* De-initialize the I2C communication bus */
+ 143:i2c_api.c     ****   HAL_I2C_DeInit(i2c_handler);
+ 172              		.loc 1 143 3 is_stmt 1 view .LVU40
+ 173 0004 FFF7FEFF 		bl	HAL_I2C_DeInit
+ 174              	.LVL11:
+ 144:i2c_api.c     **** 
+ 145:i2c_api.c     ****   /* Re-Initialize the I2C communication bus */
+ 146:i2c_api.c     ****   I2Cx_Init(i2c_handler);
+ 175              		.loc 1 146 3 view .LVU41
+ 176 0008 2046     		mov	r0, r4
+ 177 000a FFF7FEFF 		bl	I2Cx_Init
+ 178              	.LVL12:
+ 147:i2c_api.c     **** }
+ 179              		.loc 1 147 1 is_stmt 0 view .LVU42
+ 180 000e 10BD     		pop	{r4, pc}
+ 181              		.loc 1 147 1 view .LVU43
+ 182              		.cfi_endproc
+ 183              	.LFE137:
+ 185              		.section	.text.I2Cx_WriteMultiple,"ax",%progbits
+ 186              		.align	1
+ 187              		.syntax unified
+ 188              		.thumb
+ 189              		.thumb_func
+ 190              		.fpu fpv4-sp-d16
+ 192              	I2Cx_WriteMultiple:
+ 193              	.LVL13:
+ 194              	.LFB135:
+ 105:i2c_api.c     ****   HAL_StatusTypeDef status = HAL_OK;
+ 195              		.loc 1 105 1 is_stmt 1 view -0
+ 196              		.cfi_startproc
+ 197              		@ args = 8, pretend = 0, frame = 0
+ 198              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 7
+
+
+ 105:i2c_api.c     ****   HAL_StatusTypeDef status = HAL_OK;
+ 199              		.loc 1 105 1 is_stmt 0 view .LVU45
+ 200 0000 70B5     		push	{r4, r5, r6, lr}
+ 201              	.LCFI3:
+ 202              		.cfi_def_cfa_offset 16
+ 203              		.cfi_offset 4, -16
+ 204              		.cfi_offset 5, -12
+ 205              		.cfi_offset 6, -8
+ 206              		.cfi_offset 14, -4
+ 207 0002 84B0     		sub	sp, sp, #16
+ 208              	.LCFI4:
+ 209              		.cfi_def_cfa_offset 32
+ 210 0004 0546     		mov	r5, r0
+ 211 0006 0C46     		mov	r4, r1
+ 106:i2c_api.c     **** 
+ 212              		.loc 1 106 3 is_stmt 1 view .LVU46
+ 213              	.LVL14:
+ 108:i2c_api.c     **** 
+ 214              		.loc 1 108 3 view .LVU47
+ 108:i2c_api.c     **** 
+ 215              		.loc 1 108 12 is_stmt 0 view .LVU48
+ 216 0008 4FF47A71 		mov	r1, #1000
+ 217              	.LVL15:
+ 108:i2c_api.c     **** 
+ 218              		.loc 1 108 12 view .LVU49
+ 219 000c 0291     		str	r1, [sp, #8]
+ 220 000e BDF82410 		ldrh	r1, [sp, #36]
+ 221 0012 0191     		str	r1, [sp, #4]
+ 222 0014 0899     		ldr	r1, [sp, #32]
+ 223 0016 0091     		str	r1, [sp]
+ 224 0018 2146     		mov	r1, r4
+ 225 001a FFF7FEFF 		bl	HAL_I2C_Mem_Write
+ 226              	.LVL16:
+ 111:i2c_api.c     ****   {
+ 227              		.loc 1 111 3 is_stmt 1 view .LVU50
+ 111:i2c_api.c     ****   {
+ 228              		.loc 1 111 5 is_stmt 0 view .LVU51
+ 229 001e 0646     		mov	r6, r0
+ 230 0020 10B9     		cbnz	r0, .L18
+ 231              	.LVL17:
+ 232              	.L16:
+ 116:i2c_api.c     **** }
+ 233              		.loc 1 116 3 is_stmt 1 view .LVU52
+ 117:i2c_api.c     **** 
+ 234              		.loc 1 117 1 is_stmt 0 view .LVU53
+ 235 0022 3046     		mov	r0, r6
+ 236 0024 04B0     		add	sp, sp, #16
+ 237              	.LCFI5:
+ 238              		.cfi_remember_state
+ 239              		.cfi_def_cfa_offset 16
+ 240              		@ sp needed
+ 241 0026 70BD     		pop	{r4, r5, r6, pc}
+ 242              	.LVL18:
+ 243              	.L18:
+ 244              	.LCFI6:
+ 245              		.cfi_restore_state
+ 114:i2c_api.c     ****   }
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 8
+
+
+ 246              		.loc 1 114 5 is_stmt 1 view .LVU54
+ 247 0028 2146     		mov	r1, r4
+ 248 002a 2846     		mov	r0, r5
+ 249              	.LVL19:
+ 114:i2c_api.c     ****   }
+ 250              		.loc 1 114 5 is_stmt 0 view .LVU55
+ 251 002c FFF7FEFF 		bl	I2Cx_Error
+ 252              	.LVL20:
+ 253 0030 F7E7     		b	.L16
+ 254              		.cfi_endproc
+ 255              	.LFE135:
+ 257              		.section	.text.I2Cx_ReadMultiple,"ax",%progbits
+ 258              		.align	1
+ 259              		.syntax unified
+ 260              		.thumb
+ 261              		.thumb_func
+ 262              		.fpu fpv4-sp-d16
+ 264              	I2Cx_ReadMultiple:
+ 265              	.LVL21:
+ 266              	.LFB134:
+  79:i2c_api.c     ****   HAL_StatusTypeDef status = HAL_OK;
+ 267              		.loc 1 79 1 is_stmt 1 view -0
+ 268              		.cfi_startproc
+ 269              		@ args = 8, pretend = 0, frame = 0
+ 270              		@ frame_needed = 0, uses_anonymous_args = 0
+  79:i2c_api.c     ****   HAL_StatusTypeDef status = HAL_OK;
+ 271              		.loc 1 79 1 is_stmt 0 view .LVU57
+ 272 0000 70B5     		push	{r4, r5, r6, lr}
+ 273              	.LCFI7:
+ 274              		.cfi_def_cfa_offset 16
+ 275              		.cfi_offset 4, -16
+ 276              		.cfi_offset 5, -12
+ 277              		.cfi_offset 6, -8
+ 278              		.cfi_offset 14, -4
+ 279 0002 84B0     		sub	sp, sp, #16
+ 280              	.LCFI8:
+ 281              		.cfi_def_cfa_offset 32
+ 282 0004 0546     		mov	r5, r0
+ 283 0006 0C46     		mov	r4, r1
+  80:i2c_api.c     **** 
+ 284              		.loc 1 80 3 is_stmt 1 view .LVU58
+ 285              	.LVL22:
+  82:i2c_api.c     **** 
+ 286              		.loc 1 82 3 view .LVU59
+  82:i2c_api.c     **** 
+ 287              		.loc 1 82 12 is_stmt 0 view .LVU60
+ 288 0008 4FF47A71 		mov	r1, #1000
+ 289              	.LVL23:
+  82:i2c_api.c     **** 
+ 290              		.loc 1 82 12 view .LVU61
+ 291 000c 0291     		str	r1, [sp, #8]
+ 292 000e BDF82410 		ldrh	r1, [sp, #36]
+ 293 0012 0191     		str	r1, [sp, #4]
+ 294 0014 0899     		ldr	r1, [sp, #32]
+ 295 0016 0091     		str	r1, [sp]
+ 296 0018 2146     		mov	r1, r4
+ 297 001a FFF7FEFF 		bl	HAL_I2C_Mem_Read
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 9
+
+
+ 298              	.LVL24:
+  85:i2c_api.c     ****   {
+ 299              		.loc 1 85 3 is_stmt 1 view .LVU62
+  85:i2c_api.c     ****   {
+ 300              		.loc 1 85 5 is_stmt 0 view .LVU63
+ 301 001e 0646     		mov	r6, r0
+ 302 0020 10B9     		cbnz	r0, .L22
+ 303              	.LVL25:
+ 304              	.L20:
+  90:i2c_api.c     **** }
+ 305              		.loc 1 90 3 is_stmt 1 view .LVU64
+  91:i2c_api.c     **** 
+ 306              		.loc 1 91 1 is_stmt 0 view .LVU65
+ 307 0022 3046     		mov	r0, r6
+ 308 0024 04B0     		add	sp, sp, #16
+ 309              	.LCFI9:
+ 310              		.cfi_remember_state
+ 311              		.cfi_def_cfa_offset 16
+ 312              		@ sp needed
+ 313 0026 70BD     		pop	{r4, r5, r6, pc}
+ 314              	.LVL26:
+ 315              	.L22:
+ 316              	.LCFI10:
+ 317              		.cfi_restore_state
+  88:i2c_api.c     ****   }
+ 318              		.loc 1 88 5 is_stmt 1 view .LVU66
+ 319 0028 2146     		mov	r1, r4
+ 320 002a 2846     		mov	r0, r5
+ 321              	.LVL27:
+  88:i2c_api.c     ****   }
+ 322              		.loc 1 88 5 is_stmt 0 view .LVU67
+ 323 002c FFF7FEFF 		bl	I2Cx_Error
+ 324              	.LVL28:
+ 325 0030 F7E7     		b	.L20
+ 326              		.cfi_endproc
+ 327              	.LFE134:
+ 329              		.section	.text.I2Cx_IsDeviceReady,"ax",%progbits
+ 330              		.align	1
+ 331              		.syntax unified
+ 332              		.thumb
+ 333              		.thumb_func
+ 334              		.fpu fpv4-sp-d16
+ 336              	I2Cx_IsDeviceReady:
+ 337              	.LVL29:
+ 338              	.LFB136:
+ 129:i2c_api.c     ****   return (HAL_I2C_IsDeviceReady(i2c_handler, DevAddress, Trials, 1000));
+ 339              		.loc 1 129 1 is_stmt 1 view -0
+ 340              		.cfi_startproc
+ 341              		@ args = 0, pretend = 0, frame = 0
+ 342              		@ frame_needed = 0, uses_anonymous_args = 0
+ 129:i2c_api.c     ****   return (HAL_I2C_IsDeviceReady(i2c_handler, DevAddress, Trials, 1000));
+ 343              		.loc 1 129 1 is_stmt 0 view .LVU69
+ 344 0000 08B5     		push	{r3, lr}
+ 345              	.LCFI11:
+ 346              		.cfi_def_cfa_offset 8
+ 347              		.cfi_offset 3, -8
+ 348              		.cfi_offset 14, -4
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 10
+
+
+ 130:i2c_api.c     **** }
+ 349              		.loc 1 130 3 is_stmt 1 view .LVU70
+ 130:i2c_api.c     **** }
+ 350              		.loc 1 130 11 is_stmt 0 view .LVU71
+ 351 0002 4FF47A73 		mov	r3, #1000
+ 352 0006 FFF7FEFF 		bl	HAL_I2C_IsDeviceReady
+ 353              	.LVL30:
+ 131:i2c_api.c     **** 
+ 354              		.loc 1 131 1 view .LVU72
+ 355 000a 08BD     		pop	{r3, pc}
+ 356              		.cfi_endproc
+ 357              	.LFE136:
+ 359              		.section	.text.I2C_API_Init,"ax",%progbits
+ 360              		.align	1
+ 361              		.global	I2C_API_Init
+ 362              		.syntax unified
+ 363              		.thumb
+ 364              		.thumb_func
+ 365              		.fpu fpv4-sp-d16
+ 367              	I2C_API_Init:
+ 368              	.LVL31:
+ 369              	.LFB138:
+ 148:i2c_api.c     **** 
+ 149:i2c_api.c     **** 
+ 150:i2c_api.c     **** /*******************************************************************************
+ 151:i2c_api.c     ****                             Exported functions
+ 152:i2c_api.c     **** *******************************************************************************/
+ 153:i2c_api.c     **** 
+ 154:i2c_api.c     **** bool I2C_API_Init(bool fast_speed)
+ 155:i2c_api.c     **** {
+ 370              		.loc 1 155 1 is_stmt 1 view -0
+ 371              		.cfi_startproc
+ 372              		@ args = 0, pretend = 0, frame = 0
+ 373              		@ frame_needed = 0, uses_anonymous_args = 0
+ 374              		.loc 1 155 1 is_stmt 0 view .LVU74
+ 375 0000 10B5     		push	{r4, lr}
+ 376              	.LCFI12:
+ 377              		.cfi_def_cfa_offset 8
+ 378              		.cfi_offset 4, -8
+ 379              		.cfi_offset 14, -4
+ 380 0002 0446     		mov	r4, r0
+ 156:i2c_api.c     ****     I2Cx_Init(&hi2c2);
+ 381              		.loc 1 156 5 is_stmt 1 view .LVU75
+ 382 0004 0748     		ldr	r0, .L29
+ 383              	.LVL32:
+ 384              		.loc 1 156 5 is_stmt 0 view .LVU76
+ 385 0006 FFF7FEFF 		bl	I2Cx_Init
+ 386              	.LVL33:
+ 157:i2c_api.c     **** 
+ 158:i2c_api.c     ****     if(fast_speed)
+ 387              		.loc 1 158 5 is_stmt 1 view .LVU77
+ 388              		.loc 1 158 7 is_stmt 0 view .LVU78
+ 389 000a 2CB1     		cbz	r4, .L26
+ 159:i2c_api.c     ****     {
+ 160:i2c_api.c     ****         HAL_I2CEx_EnableFastModePlus(I2C_FASTMODEPLUS_I2C2);
+ 390              		.loc 1 160 9 is_stmt 1 view .LVU79
+ 391 000c 4FF40010 		mov	r0, #2097152
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 11
+
+
+ 392 0010 FFF7FEFF 		bl	HAL_I2CEx_EnableFastModePlus
+ 393              	.LVL34:
+ 394              	.L27:
+ 161:i2c_api.c     ****     }
+ 162:i2c_api.c     ****     else
+ 163:i2c_api.c     ****     {
+ 164:i2c_api.c     ****         HAL_I2CEx_DisableFastModePlus(I2C_FASTMODEPLUS_I2C2);
+ 165:i2c_api.c     ****     }
+ 166:i2c_api.c     **** 
+ 167:i2c_api.c     ****     return true;
+ 395              		.loc 1 167 5 view .LVU80
+ 168:i2c_api.c     **** }
+ 396              		.loc 1 168 1 is_stmt 0 view .LVU81
+ 397 0014 0120     		movs	r0, #1
+ 398 0016 10BD     		pop	{r4, pc}
+ 399              	.L26:
+ 164:i2c_api.c     ****     }
+ 400              		.loc 1 164 9 is_stmt 1 view .LVU82
+ 401 0018 4FF40010 		mov	r0, #2097152
+ 402 001c FFF7FEFF 		bl	HAL_I2CEx_DisableFastModePlus
+ 403              	.LVL35:
+ 404 0020 F8E7     		b	.L27
+ 405              	.L30:
+ 406 0022 00BF     		.align	2
+ 407              	.L29:
+ 408 0024 00000000 		.word	.LANCHOR0
+ 409              		.cfi_endproc
+ 410              	.LFE138:
+ 412              		.section	.text.I2C_API_DeInit,"ax",%progbits
+ 413              		.align	1
+ 414              		.global	I2C_API_DeInit
+ 415              		.syntax unified
+ 416              		.thumb
+ 417              		.thumb_func
+ 418              		.fpu fpv4-sp-d16
+ 420              	I2C_API_DeInit:
+ 421              	.LFB139:
+ 169:i2c_api.c     **** 
+ 170:i2c_api.c     **** 
+ 171:i2c_api.c     **** void I2C_API_DeInit(void)
+ 172:i2c_api.c     **** {
+ 422              		.loc 1 172 1 view -0
+ 423              		.cfi_startproc
+ 424              		@ args = 0, pretend = 0, frame = 0
+ 425              		@ frame_needed = 0, uses_anonymous_args = 0
+ 426 0000 08B5     		push	{r3, lr}
+ 427              	.LCFI13:
+ 428              		.cfi_def_cfa_offset 8
+ 429              		.cfi_offset 3, -8
+ 430              		.cfi_offset 14, -4
+ 173:i2c_api.c     ****     I2Cx_DeInit(&hi2c2);
+ 431              		.loc 1 173 5 view .LVU84
+ 432 0002 0248     		ldr	r0, .L33
+ 433 0004 FFF7FEFF 		bl	I2Cx_DeInit
+ 434              	.LVL36:
+ 174:i2c_api.c     **** }
+ 435              		.loc 1 174 1 is_stmt 0 view .LVU85
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 12
+
+
+ 436 0008 08BD     		pop	{r3, pc}
+ 437              	.L34:
+ 438 000a 00BF     		.align	2
+ 439              	.L33:
+ 440 000c 00000000 		.word	.LANCHOR0
+ 441              		.cfi_endproc
+ 442              	.LFE139:
+ 444              		.section	.text.I2C_API_Write,"ax",%progbits
+ 445              		.align	1
+ 446              		.global	I2C_API_Write
+ 447              		.syntax unified
+ 448              		.thumb
+ 449              		.thumb_func
+ 450              		.fpu fpv4-sp-d16
+ 452              	I2C_API_Write:
+ 453              	.LVL37:
+ 454              	.LFB140:
+ 175:i2c_api.c     **** 
+ 176:i2c_api.c     **** 
+ 177:i2c_api.c     **** void I2C_API_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
+ 178:i2c_api.c     **** {
+ 455              		.loc 1 178 1 is_stmt 1 view -0
+ 456              		.cfi_startproc
+ 457              		@ args = 0, pretend = 0, frame = 8
+ 458              		@ frame_needed = 0, uses_anonymous_args = 0
+ 459              		.loc 1 178 1 is_stmt 0 view .LVU87
+ 460 0000 00B5     		push	{lr}
+ 461              	.LCFI14:
+ 462              		.cfi_def_cfa_offset 4
+ 463              		.cfi_offset 14, -4
+ 464 0002 85B0     		sub	sp, sp, #20
+ 465              	.LCFI15:
+ 466              		.cfi_def_cfa_offset 24
+ 467 0004 8DF80F20 		strb	r2, [sp, #15]
+ 179:i2c_api.c     ****     I2Cx_WriteMultiple(&hi2c2, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT,(uint8_t*)&Value, 1);
+ 468              		.loc 1 179 5 is_stmt 1 view .LVU88
+ 469 0008 0123     		movs	r3, #1
+ 470 000a 0193     		str	r3, [sp, #4]
+ 471 000c 0DF10F02 		add	r2, sp, #15
+ 472              	.LVL38:
+ 473              		.loc 1 179 5 is_stmt 0 view .LVU89
+ 474 0010 0092     		str	r2, [sp]
+ 475 0012 0A46     		mov	r2, r1
+ 476              	.LVL39:
+ 477              		.loc 1 179 5 view .LVU90
+ 478 0014 0146     		mov	r1, r0
+ 479              	.LVL40:
+ 480              		.loc 1 179 5 view .LVU91
+ 481 0016 0348     		ldr	r0, .L37
+ 482              	.LVL41:
+ 483              		.loc 1 179 5 view .LVU92
+ 484 0018 FFF7FEFF 		bl	I2Cx_WriteMultiple
+ 485              	.LVL42:
+ 180:i2c_api.c     **** }
+ 486              		.loc 1 180 1 view .LVU93
+ 487 001c 05B0     		add	sp, sp, #20
+ 488              	.LCFI16:
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 13
+
+
+ 489              		.cfi_def_cfa_offset 4
+ 490              		@ sp needed
+ 491 001e 5DF804FB 		ldr	pc, [sp], #4
+ 492              	.L38:
+ 493 0022 00BF     		.align	2
+ 494              	.L37:
+ 495 0024 00000000 		.word	.LANCHOR0
+ 496              		.cfi_endproc
+ 497              	.LFE140:
+ 499              		.section	.text.I2C_API_Read,"ax",%progbits
+ 500              		.align	1
+ 501              		.global	I2C_API_Read
+ 502              		.syntax unified
+ 503              		.thumb
+ 504              		.thumb_func
+ 505              		.fpu fpv4-sp-d16
+ 507              	I2C_API_Read:
+ 508              	.LVL43:
+ 509              	.LFB141:
+ 181:i2c_api.c     **** 
+ 182:i2c_api.c     **** 
+ 183:i2c_api.c     **** uint8_t I2C_API_Read(uint8_t Addr, uint8_t Reg)
+ 184:i2c_api.c     **** {
+ 510              		.loc 1 184 1 is_stmt 1 view -0
+ 511              		.cfi_startproc
+ 512              		@ args = 0, pretend = 0, frame = 8
+ 513              		@ frame_needed = 0, uses_anonymous_args = 0
+ 514              		.loc 1 184 1 is_stmt 0 view .LVU95
+ 515 0000 00B5     		push	{lr}
+ 516              	.LCFI17:
+ 517              		.cfi_def_cfa_offset 4
+ 518              		.cfi_offset 14, -4
+ 519 0002 85B0     		sub	sp, sp, #20
+ 520              	.LCFI18:
+ 521              		.cfi_def_cfa_offset 24
+ 522 0004 0A46     		mov	r2, r1
+ 185:i2c_api.c     ****     uint8_t read_value = 0;
+ 523              		.loc 1 185 5 is_stmt 1 view .LVU96
+ 524              		.loc 1 185 13 is_stmt 0 view .LVU97
+ 525 0006 0023     		movs	r3, #0
+ 526 0008 8DF80F30 		strb	r3, [sp, #15]
+ 186:i2c_api.c     ****     I2Cx_ReadMultiple(&hi2c2, Addr, Reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*)&read_value, 1);
+ 527              		.loc 1 186 5 is_stmt 1 view .LVU98
+ 528 000c 0123     		movs	r3, #1
+ 529 000e 0193     		str	r3, [sp, #4]
+ 530 0010 0DF10F01 		add	r1, sp, #15
+ 531              	.LVL44:
+ 532              		.loc 1 186 5 is_stmt 0 view .LVU99
+ 533 0014 0091     		str	r1, [sp]
+ 534 0016 0146     		mov	r1, r0
+ 535 0018 0348     		ldr	r0, .L41
+ 536              	.LVL45:
+ 537              		.loc 1 186 5 view .LVU100
+ 538 001a FFF7FEFF 		bl	I2Cx_ReadMultiple
+ 539              	.LVL46:
+ 187:i2c_api.c     ****     return read_value;
+ 540              		.loc 1 187 5 is_stmt 1 view .LVU101
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 14
+
+
+ 188:i2c_api.c     **** }
+ 541              		.loc 1 188 1 is_stmt 0 view .LVU102
+ 542 001e 9DF80F00 		ldrb	r0, [sp, #15]	@ zero_extendqisi2
+ 543 0022 05B0     		add	sp, sp, #20
+ 544              	.LCFI19:
+ 545              		.cfi_def_cfa_offset 4
+ 546              		@ sp needed
+ 547 0024 5DF804FB 		ldr	pc, [sp], #4
+ 548              	.L42:
+ 549              		.align	2
+ 550              	.L41:
+ 551 0028 00000000 		.word	.LANCHOR0
+ 552              		.cfi_endproc
+ 553              	.LFE141:
+ 555              		.section	.text.I2C_API_ReadMultiple,"ax",%progbits
+ 556              		.align	1
+ 557              		.global	I2C_API_ReadMultiple
+ 558              		.syntax unified
+ 559              		.thumb
+ 560              		.thumb_func
+ 561              		.fpu fpv4-sp-d16
+ 563              	I2C_API_ReadMultiple:
+ 564              	.LVL47:
+ 565              	.LFB142:
+ 189:i2c_api.c     **** 
+ 190:i2c_api.c     **** 
+ 191:i2c_api.c     **** bool I2C_API_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length)
+ 192:i2c_api.c     **** {
+ 566              		.loc 1 192 1 is_stmt 1 view -0
+ 567              		.cfi_startproc
+ 568              		@ args = 0, pretend = 0, frame = 0
+ 569              		@ frame_needed = 0, uses_anonymous_args = 0
+ 570              		.loc 1 192 1 is_stmt 0 view .LVU104
+ 571 0000 00B5     		push	{lr}
+ 572              	.LCFI20:
+ 573              		.cfi_def_cfa_offset 4
+ 574              		.cfi_offset 14, -4
+ 575 0002 83B0     		sub	sp, sp, #12
+ 576              	.LCFI21:
+ 577              		.cfi_def_cfa_offset 16
+ 193:i2c_api.c     ****     HAL_StatusTypeDef res;
+ 578              		.loc 1 193 5 is_stmt 1 view .LVU105
+ 194:i2c_api.c     ****     res = I2Cx_ReadMultiple(&hi2c2, addr, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, buffer, length);
+ 579              		.loc 1 194 5 view .LVU106
+ 580              		.loc 1 194 11 is_stmt 0 view .LVU107
+ 581 0004 0193     		str	r3, [sp, #4]
+ 582 0006 0092     		str	r2, [sp]
+ 583 0008 0123     		movs	r3, #1
+ 584              	.LVL48:
+ 585              		.loc 1 194 11 view .LVU108
+ 586 000a 0A46     		mov	r2, r1
+ 587              	.LVL49:
+ 588              		.loc 1 194 11 view .LVU109
+ 589 000c 0146     		mov	r1, r0
+ 590              	.LVL50:
+ 591              		.loc 1 194 11 view .LVU110
+ 592 000e 0448     		ldr	r0, .L45
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 15
+
+
+ 593              	.LVL51:
+ 594              		.loc 1 194 11 view .LVU111
+ 595 0010 FFF7FEFF 		bl	I2Cx_ReadMultiple
+ 596              	.LVL52:
+ 195:i2c_api.c     ****     return res == HAL_OK ? true : false;
+ 597              		.loc 1 195 5 is_stmt 1 view .LVU112
+ 196:i2c_api.c     **** }
+ 598              		.loc 1 196 1 is_stmt 0 view .LVU113
+ 599 0014 B0FA80F0 		clz	r0, r0
+ 600              	.LVL53:
+ 601              		.loc 1 196 1 view .LVU114
+ 602 0018 4009     		lsrs	r0, r0, #5
+ 603 001a 03B0     		add	sp, sp, #12
+ 604              	.LCFI22:
+ 605              		.cfi_def_cfa_offset 4
+ 606              		@ sp needed
+ 607 001c 5DF804FB 		ldr	pc, [sp], #4
+ 608              	.L46:
+ 609              		.align	2
+ 610              	.L45:
+ 611 0020 00000000 		.word	.LANCHOR0
+ 612              		.cfi_endproc
+ 613              	.LFE142:
+ 615              		.section	.text.I2C_API_WriteMultiple,"ax",%progbits
+ 616              		.align	1
+ 617              		.global	I2C_API_WriteMultiple
+ 618              		.syntax unified
+ 619              		.thumb
+ 620              		.thumb_func
+ 621              		.fpu fpv4-sp-d16
+ 623              	I2C_API_WriteMultiple:
+ 624              	.LVL54:
+ 625              	.LFB143:
+ 197:i2c_api.c     **** 
+ 198:i2c_api.c     **** 
+ 199:i2c_api.c     **** bool I2C_API_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length)
+ 200:i2c_api.c     **** {
+ 626              		.loc 1 200 1 is_stmt 1 view -0
+ 627              		.cfi_startproc
+ 628              		@ args = 0, pretend = 0, frame = 0
+ 629              		@ frame_needed = 0, uses_anonymous_args = 0
+ 630              		.loc 1 200 1 is_stmt 0 view .LVU116
+ 631 0000 00B5     		push	{lr}
+ 632              	.LCFI23:
+ 633              		.cfi_def_cfa_offset 4
+ 634              		.cfi_offset 14, -4
+ 635 0002 83B0     		sub	sp, sp, #12
+ 636              	.LCFI24:
+ 637              		.cfi_def_cfa_offset 16
+ 201:i2c_api.c     ****     HAL_StatusTypeDef res;
+ 638              		.loc 1 201 5 is_stmt 1 view .LVU117
+ 202:i2c_api.c     ****     res = I2Cx_WriteMultiple(&hi2c2, addr, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, buffer, length);
+ 639              		.loc 1 202 5 view .LVU118
+ 640              		.loc 1 202 11 is_stmt 0 view .LVU119
+ 641 0004 0193     		str	r3, [sp, #4]
+ 642 0006 0092     		str	r2, [sp]
+ 643 0008 0123     		movs	r3, #1
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 16
+
+
+ 644              	.LVL55:
+ 645              		.loc 1 202 11 view .LVU120
+ 646 000a 0A46     		mov	r2, r1
+ 647              	.LVL56:
+ 648              		.loc 1 202 11 view .LVU121
+ 649 000c 0146     		mov	r1, r0
+ 650              	.LVL57:
+ 651              		.loc 1 202 11 view .LVU122
+ 652 000e 0448     		ldr	r0, .L49
+ 653              	.LVL58:
+ 654              		.loc 1 202 11 view .LVU123
+ 655 0010 FFF7FEFF 		bl	I2Cx_WriteMultiple
+ 656              	.LVL59:
+ 203:i2c_api.c     ****     return res == HAL_OK ? true : false;
+ 657              		.loc 1 203 5 is_stmt 1 view .LVU124
+ 204:i2c_api.c     **** }
+ 658              		.loc 1 204 1 is_stmt 0 view .LVU125
+ 659 0014 B0FA80F0 		clz	r0, r0
+ 660              	.LVL60:
+ 661              		.loc 1 204 1 view .LVU126
+ 662 0018 4009     		lsrs	r0, r0, #5
+ 663 001a 03B0     		add	sp, sp, #12
+ 664              	.LCFI25:
+ 665              		.cfi_def_cfa_offset 4
+ 666              		@ sp needed
+ 667 001c 5DF804FB 		ldr	pc, [sp], #4
+ 668              	.L50:
+ 669              		.align	2
+ 670              	.L49:
+ 671 0020 00000000 		.word	.LANCHOR0
+ 672              		.cfi_endproc
+ 673              	.LFE143:
+ 675              		.section	.text.I2C_API_IsDeviceReady,"ax",%progbits
+ 676              		.align	1
+ 677              		.global	I2C_API_IsDeviceReady
+ 678              		.syntax unified
+ 679              		.thumb
+ 680              		.thumb_func
+ 681              		.fpu fpv4-sp-d16
+ 683              	I2C_API_IsDeviceReady:
+ 684              	.LVL61:
+ 685              	.LFB144:
+ 205:i2c_api.c     **** 
+ 206:i2c_api.c     **** 
+ 207:i2c_api.c     **** HAL_StatusTypeDef I2C_API_IsDeviceReady(uint16_t dev_address, uint32_t trials)
+ 208:i2c_api.c     **** {
+ 686              		.loc 1 208 1 is_stmt 1 view -0
+ 687              		.cfi_startproc
+ 688              		@ args = 0, pretend = 0, frame = 0
+ 689              		@ frame_needed = 0, uses_anonymous_args = 0
+ 690              		.loc 1 208 1 is_stmt 0 view .LVU128
+ 691 0000 08B5     		push	{r3, lr}
+ 692              	.LCFI26:
+ 693              		.cfi_def_cfa_offset 8
+ 694              		.cfi_offset 3, -8
+ 695              		.cfi_offset 14, -4
+ 696 0002 0A46     		mov	r2, r1
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 17
+
+
+ 209:i2c_api.c     ****     return (I2Cx_IsDeviceReady(&hi2c2, dev_address, trials));
+ 697              		.loc 1 209 5 is_stmt 1 view .LVU129
+ 698              		.loc 1 209 13 is_stmt 0 view .LVU130
+ 699 0004 0146     		mov	r1, r0
+ 700              	.LVL62:
+ 701              		.loc 1 209 13 view .LVU131
+ 702 0006 0248     		ldr	r0, .L53
+ 703              	.LVL63:
+ 704              		.loc 1 209 13 view .LVU132
+ 705 0008 FFF7FEFF 		bl	I2Cx_IsDeviceReady
+ 706              	.LVL64:
+ 210:i2c_api.c     **** }
+ 707              		.loc 1 210 1 view .LVU133
+ 708 000c 08BD     		pop	{r3, pc}
+ 709              	.L54:
+ 710 000e 00BF     		.align	2
+ 711              	.L53:
+ 712 0010 00000000 		.word	.LANCHOR0
+ 713              		.cfi_endproc
+ 714              	.LFE144:
+ 716              		.global	hi2c2
+ 717              		.section	.bss.hi2c2,"aw",%nobits
+ 718              		.align	2
+ 719              		.set	.LANCHOR0,. + 0
+ 722              	hi2c2:
+ 723 0000 00000000 		.space	76
+ 723      00000000 
+ 723      00000000 
+ 723      00000000 
+ 723      00000000 
+ 724              		.text
+ 725              	.Letext0:
+ 726              		.file 2 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\machine\\_default_typ
+ 727              		.file 3 "c:\\gnu arm embedded toolchain\\10 2021.07\\arm-none-eabi\\include\\sys\\_stdint.h"
+ 728              		.file 4 "drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l475xx.h"
+ 729              		.file 5 "drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_def.h"
+ 730              		.file 6 "drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_dma.h"
+ 731              		.file 7 "drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c.h"
+ 732              		.file 8 "drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c_ex.h"
+ 733              		.file 9 "../inc/error.h"
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 i2c_api.c
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:18     .text.I2Cx_Init:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:25     .text.I2Cx_Init:00000000 I2Cx_Init
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:118    .text.I2Cx_Init:0000004c $d
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:124    .text.I2Cx_DeInit:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:130    .text.I2Cx_DeInit:00000000 I2Cx_DeInit
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:152    .text.I2Cx_Error:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:158    .text.I2Cx_Error:00000000 I2Cx_Error
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:186    .text.I2Cx_WriteMultiple:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:192    .text.I2Cx_WriteMultiple:00000000 I2Cx_WriteMultiple
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:258    .text.I2Cx_ReadMultiple:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:264    .text.I2Cx_ReadMultiple:00000000 I2Cx_ReadMultiple
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:330    .text.I2Cx_IsDeviceReady:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:336    .text.I2Cx_IsDeviceReady:00000000 I2Cx_IsDeviceReady
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:360    .text.I2C_API_Init:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:367    .text.I2C_API_Init:00000000 I2C_API_Init
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:408    .text.I2C_API_Init:00000024 $d
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:413    .text.I2C_API_DeInit:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:420    .text.I2C_API_DeInit:00000000 I2C_API_DeInit
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:440    .text.I2C_API_DeInit:0000000c $d
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:445    .text.I2C_API_Write:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:452    .text.I2C_API_Write:00000000 I2C_API_Write
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:495    .text.I2C_API_Write:00000024 $d
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:500    .text.I2C_API_Read:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:507    .text.I2C_API_Read:00000000 I2C_API_Read
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:551    .text.I2C_API_Read:00000028 $d
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:556    .text.I2C_API_ReadMultiple:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:563    .text.I2C_API_ReadMultiple:00000000 I2C_API_ReadMultiple
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:611    .text.I2C_API_ReadMultiple:00000020 $d
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:616    .text.I2C_API_WriteMultiple:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:623    .text.I2C_API_WriteMultiple:00000000 I2C_API_WriteMultiple
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:671    .text.I2C_API_WriteMultiple:00000020 $d
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:676    .text.I2C_API_IsDeviceReady:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:683    .text.I2C_API_IsDeviceReady:00000000 I2C_API_IsDeviceReady
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:712    .text.I2C_API_IsDeviceReady:00000010 $d
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:722    .bss.hi2c2:00000000 hi2c2
+C:\Users\mikal\AppData\Local\Temp\ccivbDQH.s:718    .bss.hi2c2:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_I2C_Init
+HAL_I2CEx_ConfigAnalogFilter
+HAL_I2CEx_ConfigDigitalFilter
+Error_Handler
+HAL_I2C_DeInit
+HAL_I2C_Mem_Write
+HAL_I2C_Mem_Read
+HAL_I2C_IsDeviceReady
+HAL_I2CEx_EnableFastModePlus
+HAL_I2CEx_DisableFastModePlus

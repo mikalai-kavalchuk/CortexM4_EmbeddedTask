@@ -9,16 +9,22 @@
 
 #include "max6650.h"
 
-#define COMMANDS_COUNT          5
+#define COMMANDS_COUNT          4
 
-static MAX6650_Config_t max6650_config;
-static MAX6650I2C_ExtInterface_t max6650_i2c_ext_interface;
+static MAX6650_Config_t *max6650_config = NULL;
+
+/* MAX6650 I2C external interface configuration */
+static const struct MAX6650_I2C_ExtInterface max6650_i2c_ext_interface =
+{
+    .i2c_setup = I2C_API_Init,
+    .i2c_read = I2C_API_ReadMultiple,
+    .i2c_write = I2C_API_WriteMultiple
+};
 
 
 /* Prototypes for console commands */
 static bool set_fan_speed(int var);
 static bool get_fan_speed(int var);
-static bool get_temperature(int var);
 static bool self_erase(int var);
 static bool help(int var);
 
@@ -29,14 +35,13 @@ static bool help(int var);
 static Command_t commands_list[COMMANDS_COUNT] = {
     {set_fan_speed,     "set_fan_speed",    ",speed<0..100>"},
     {get_fan_speed,     "get_fan_speed",    ""},
-    {get_temperature,   "get_temperature",  "" },
     {self_erase,        "self_erase",       " "TC_RED"*Warning: this operation is irreversible"TC_RESET},
     {help,              "help",             ""}
 };
 
 
 /**
- *
+ * Get string for status name
  */
 static const char* get_status(bool status)
 {
@@ -149,15 +154,6 @@ static bool get_fan_speed(int var)
     return res;
 }
 
-/**
- * @brief Handler for "get_temperature" command
- * @param[in] not used
- */
-static bool get_temperature(int var)
-{
-    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
-    return true;
-}
 
 /**
  * @brief Handler for "self_erase" command
@@ -207,30 +203,31 @@ static bool help(int var)
     return true;
 }
 
-
-bool UserFunctions_Init(void)
+static bool max6650_init()
 {
     bool res;
 
+    max6650_config = (MAX6650_Config_t *) malloc(sizeof(max6650_config));
+    if(max6650_config == NULL)
+    {
+        printf(TC_RED"MAX6650 config: no memory\r\n");
+        return false;
+    }
+
     /* MAX6650/fan configuration */
-    max6650_config.add_line_connection = ADD_Line_GND;
-    max6650_config.rpm_max = 10500U;
-    max6650_config.fan_lovtage = FanVoltage_12V;
-    max6650_config.operating_mode = OperatingMode_Closed_Loop;
+    max6650_config->add_line_connection = ADD_Line_GND;
+    max6650_config->rpm_max = 10500U;
+    max6650_config->fan_lovtage = FanVoltage_12V;
+    max6650_config->operating_mode = OperatingMode_Closed_Loop;
     /* Select the KScale value so the fan’s full speed is achieved with a speed register value of approximately 64
      * Fan-Speed Register value (KTACH) may be calculated as:
      * tTACH = 1 / (2 x Fan Speed[RPS])
      * KTACH = [tTACH x KSCALE x (fCLK / 128)] - 1
      *
      * KSCALE=11.5 for 10500 RPM, so choosing scale=KScale_16, in this case KTACH=90 at max speed (should be less than 128)*/
-    max6650_config.k_scale = KScale_16;
+    max6650_config->k_scale = KScale_16;
 
-    /* MAX6650 I2C external interface configuration */
-    max6650_i2c_ext_interface.i2c_setup = I2CAPI_Init;
-    max6650_i2c_ext_interface.i2c_read = I2CAPI_ReadMultiple;
-    max6650_i2c_ext_interface.i2c_write = I2CAPI_WriteMultiple;
-
-    res = MAX6650_Init(&max6650_config, &max6650_i2c_ext_interface);
+    res = MAX6650_Init(max6650_config, &max6650_i2c_ext_interface);
 
     if(res != true)
     {
@@ -239,6 +236,16 @@ bool UserFunctions_Init(void)
     }
 
     return true;
+}
+
+
+bool UserFunctions_Init(void)
+{
+    bool res;
+
+    res = max6650_init();
+
+    return res;
 }
 
 

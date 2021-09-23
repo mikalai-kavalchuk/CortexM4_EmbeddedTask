@@ -15,19 +15,19 @@ extern "C" {
   * @param  fast_speed: fast speed mode
   * @retval None
   */
-bool I2CAPI_Init(bool fast_speed);
+bool I2C_API_Init(bool fast_speed);
 
 /**
   * @brief  DeInitializes I2C low level.
   * @retval None
   */
-void I2CAPI_DeInit(void);
+void I2C_API_DeInit(void);
 
 /**
   * @brief  Set I2C speed.
   * @retval None
   */
-void I2CAPI_SetSpeed(uint32_t i2c_speed);
+void I2C_API_SetSpeed(uint32_t i2c_speed);
 
 /**
   * @brief  I2C writes a single data.
@@ -36,7 +36,7 @@ void I2CAPI_SetSpeed(uint32_t i2c_speed);
   * @param  Value: Data to be written
   * @retval None
   */
-void I2CAPI_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
+void I2C_API_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
 
 /**
   * @brief  I2C reads a single data.
@@ -44,7 +44,7 @@ void I2CAPI_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
   * @param  Reg: Reg address
   * @retval Data to be read
   */
-uint8_t I2CAPI_Read(uint8_t Addr, uint8_t Reg);
+uint8_t I2C_API_Read(uint8_t Addr, uint8_t Reg);
 
 /**
   * @brief  I2C reads multiple data with I2C communication
@@ -55,7 +55,7 @@ uint8_t I2CAPI_Read(uint8_t Addr, uint8_t Reg);
   * @param  Length: Length of the data
   * @retval HAL status
   */
-bool I2CAPI_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
+bool I2C_API_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
 
 
 /**
@@ -68,7 +68,7 @@ bool I2CAPI_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t le
   * @retval None
   */
 
-bool I2CAPI_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
+bool I2C_API_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
 /**
   * @brief  I2C checks if target device is ready for communication.
   * @note   This function is used with Memory devices
@@ -76,7 +76,7 @@ bool I2CAPI_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t l
   * @param  Trials: Number of trials
   * @retval HAL status
   */
-HAL_StatusTypeDef I2CAPI_IsDeviceReady(uint16_t DevAddress, uint32_t Trials);
+HAL_StatusTypeDef I2C_API_IsDeviceReady(uint16_t DevAddress, uint32_t Trials);
 
 #ifdef __cplusplus
 }

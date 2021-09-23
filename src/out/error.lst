@@ -1,0 +1,305 @@
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccgmKHvI.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.eabi_attribute 27, 1
+   3              		.eabi_attribute 28, 1
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"error.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Error_Handler,"ax",%progbits
+  18              		.align	1
+  19              		.global	Error_Handler
+  20              		.arch armv7e-m
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  24              		.fpu fpv4-sp-d16
+  26              	Error_Handler:
+  27              	.LFB132:
+  28              		.file 1 "error.c"
+   1:error.c       **** #include "error.h"
+   2:error.c       **** #include "stm32l4xx_hal.h"
+   3:error.c       **** 
+   4:error.c       **** /**
+   5:error.c       ****   * @brief  This function is executed in case of error occurrence.
+   6:error.c       ****   * @retval None
+   7:error.c       ****   */
+   8:error.c       **** void Error_Handler(void)
+   9:error.c       **** {
+  29              		.loc 1 9 1 view -0
+  30              		.cfi_startproc
+  31              		@ Volatile: function does not return.
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  10:error.c       ****   /* User can add his own implementation to report the HAL error return state */
+  11:error.c       ****   __disable_irq();
+  35              		.loc 1 11 3 view .LVU1
+  36              	.LBB4:
+  37              	.LBI4:
+  38              		.file 2 "drivers/CMSIS/Include/cmsis_gcc.h"
+   1:drivers/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:drivers/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:drivers/CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:drivers/CMSIS/Include/cmsis_gcc.h ****  * @version  V5.2.0
+   5:drivers/CMSIS/Include/cmsis_gcc.h ****  * @date     08. May 2019
+   6:drivers/CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:drivers/CMSIS/Include/cmsis_gcc.h **** /*
+   8:drivers/CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2019 Arm Limited. All rights reserved.
+   9:drivers/CMSIS/Include/cmsis_gcc.h ****  *
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccgmKHvI.s 			page 2
+
+
+  10:drivers/CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  12:drivers/CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:drivers/CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:drivers/CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  16:drivers/CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  18:drivers/CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:drivers/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:drivers/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:drivers/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:drivers/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+  24:drivers/CMSIS/Include/cmsis_gcc.h **** 
+  25:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+  26:drivers/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:drivers/CMSIS/Include/cmsis_gcc.h **** 
+  28:drivers/CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:drivers/CMSIS/Include/cmsis_gcc.h **** 
+  34:drivers/CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  38:drivers/CMSIS/Include/cmsis_gcc.h **** 
+  39:drivers/CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  43:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  46:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  49:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:drivers/CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  55:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  58:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  61:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  64:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccgmKHvI.s 			page 3
+
+
+  67:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  70:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:drivers/CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  78:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+  83:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  86:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  94:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __COMPILER_BARRIER
+ 117:drivers/CMSIS/Include/cmsis_gcc.h ****   #define __COMPILER_BARRIER()                   __ASM volatile("":::"memory")
+ 118:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 119:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 120:drivers/CMSIS/Include/cmsis_gcc.h **** /* #########################  Startup and Lowlevel Init  ######################## */
+ 121:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 122:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __PROGRAM_START
+ 123:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccgmKHvI.s 			page 4
+
+
+ 124:drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 125:drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Initializes data and bss sections
+ 126:drivers/CMSIS/Include/cmsis_gcc.h ****   \details This default implementations initialized all data and additional bss
+ 127:drivers/CMSIS/Include/cmsis_gcc.h ****            sections relying on .copy.table and .zero.table specified properly
+ 128:drivers/CMSIS/Include/cmsis_gcc.h ****            in the used linker script.
+ 129:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 130:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 131:drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE __NO_RETURN void __cmsis_start(void)
+ 132:drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 133:drivers/CMSIS/Include/cmsis_gcc.h ****   extern void _start(void) __NO_RETURN;
+ 134:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 135:drivers/CMSIS/Include/cmsis_gcc.h ****   typedef struct {
+ 136:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t const* src;
+ 137:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t* dest;
+ 138:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t  wlen;
+ 139:drivers/CMSIS/Include/cmsis_gcc.h ****   } __copy_table_t;
+ 140:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 141:drivers/CMSIS/Include/cmsis_gcc.h ****   typedef struct {
+ 142:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t* dest;
+ 143:drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t  wlen;
+ 144:drivers/CMSIS/Include/cmsis_gcc.h ****   } __zero_table_t;
+ 145:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 146:drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __copy_table_t __copy_table_start__;
+ 147:drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __copy_table_t __copy_table_end__;
+ 148:drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __zero_table_t __zero_table_start__;
+ 149:drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __zero_table_t __zero_table_end__;
+ 150:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 151:drivers/CMSIS/Include/cmsis_gcc.h ****   for (__copy_table_t const* pTable = &__copy_table_start__; pTable < &__copy_table_end__; ++pTable
+ 152:drivers/CMSIS/Include/cmsis_gcc.h ****     for(uint32_t i=0u; i<pTable->wlen; ++i) {
+ 153:drivers/CMSIS/Include/cmsis_gcc.h ****       pTable->dest[i] = pTable->src[i];
+ 154:drivers/CMSIS/Include/cmsis_gcc.h ****     }
+ 155:drivers/CMSIS/Include/cmsis_gcc.h ****   }
+ 156:drivers/CMSIS/Include/cmsis_gcc.h ****  
+ 157:drivers/CMSIS/Include/cmsis_gcc.h ****   for (__zero_table_t const* pTable = &__zero_table_start__; pTable < &__zero_table_end__; ++pTable
+ 158:drivers/CMSIS/Include/cmsis_gcc.h ****     for(uint32_t i=0u; i<pTable->wlen; ++i) {
+ 159:drivers/CMSIS/Include/cmsis_gcc.h ****       pTable->dest[i] = 0u;
+ 160:drivers/CMSIS/Include/cmsis_gcc.h ****     }
+ 161:drivers/CMSIS/Include/cmsis_gcc.h ****   }
+ 162:drivers/CMSIS/Include/cmsis_gcc.h ****  
+ 163:drivers/CMSIS/Include/cmsis_gcc.h ****   _start();
+ 164:drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 165:drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 166:drivers/CMSIS/Include/cmsis_gcc.h **** #define __PROGRAM_START           __cmsis_start
+ 167:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 168:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 169:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __INITIAL_SP
+ 170:drivers/CMSIS/Include/cmsis_gcc.h **** #define __INITIAL_SP              __StackTop
+ 171:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 172:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 173:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __STACK_LIMIT
+ 174:drivers/CMSIS/Include/cmsis_gcc.h **** #define __STACK_LIMIT             __StackLimit
+ 175:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 176:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 177:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __VECTOR_TABLE
+ 178:drivers/CMSIS/Include/cmsis_gcc.h **** #define __VECTOR_TABLE            __Vectors
+ 179:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 180:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccgmKHvI.s 			page 5
+
+
+ 181:drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __VECTOR_TABLE_ATTRIBUTE
+ 182:drivers/CMSIS/Include/cmsis_gcc.h **** #define __VECTOR_TABLE_ATTRIBUTE  __attribute((used, section(".vectors")))
+ 183:drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 184:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 185:drivers/CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 186:drivers/CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 187:drivers/CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 188:drivers/CMSIS/Include/cmsis_gcc.h ****   @{
+ 189:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 190:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 191:drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 192:drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 193:drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 194:drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 195:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 196:drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ 197:drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 198:drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 199:drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 200:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 201:drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 202:drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 203:drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 204:drivers/CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 205:drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 206:drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 207:drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+  39              		.loc 2 207 27 view .LVU2
+  40              	.LBB5:
+ 208:drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 209:drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+  41              		.loc 2 209 3 view .LVU3
+  42              		.syntax unified
+  43              	@ 209 "drivers/CMSIS/Include/cmsis_gcc.h" 1
+  44 0000 72B6     		cpsid i
+  45              	@ 0 "" 2
+  46              		.thumb
+  47              		.syntax unified
+  48              	.L2:
+  49              	.LBE5:
+  50              	.LBE4:
+  12:error.c       ****   while (1)
+  51              		.loc 1 12 3 discriminator 1 view .LVU4
+  13:error.c       ****   {
+  14:error.c       ****   }
+  52              		.loc 1 14 3 discriminator 1 view .LVU5
+  12:error.c       ****   while (1)
+  53              		.loc 1 12 9 discriminator 1 view .LVU6
+  54 0002 FEE7     		b	.L2
+  55              		.cfi_endproc
+  56              	.LFE132:
+  58              		.text
+  59              	.Letext0:
+ARM GAS  C:\Users\mikal\AppData\Local\Temp\ccgmKHvI.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 error.c
+C:\Users\mikal\AppData\Local\Temp\ccgmKHvI.s:18     .text.Error_Handler:00000000 $t
+C:\Users\mikal\AppData\Local\Temp\ccgmKHvI.s:26     .text.Error_Handler:00000000 Error_Handler
+
+NO UNDEFINED SYMBOLS

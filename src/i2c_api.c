@@ -151,7 +151,7 @@ static void I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr)
                             Exported functions
 *******************************************************************************/
 
-bool I2CAPI_Init(bool fast_speed)
+bool I2C_API_Init(bool fast_speed)
 {
     I2Cx_Init(&hi2c2);
 
@@ -168,19 +168,19 @@ bool I2CAPI_Init(bool fast_speed)
 }
 
 
-void I2CAPI_DeInit(void)
+void I2C_API_DeInit(void)
 {
     I2Cx_DeInit(&hi2c2);
 }
 
 
-void I2CAPI_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
+void I2C_API_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
 {
     I2Cx_WriteMultiple(&hi2c2, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT,(uint8_t*)&Value, 1);
 }
 
 
-uint8_t I2CAPI_Read(uint8_t Addr, uint8_t Reg)
+uint8_t I2C_API_Read(uint8_t Addr, uint8_t Reg)
 {
     uint8_t read_value = 0;
     I2Cx_ReadMultiple(&hi2c2, Addr, Reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*)&read_value, 1);
@@ -188,7 +188,7 @@ uint8_t I2CAPI_Read(uint8_t Addr, uint8_t Reg)
 }
 
 
-bool I2CAPI_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length)
+bool I2C_API_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length)
 {
     HAL_StatusTypeDef res;
     res = I2Cx_ReadMultiple(&hi2c2, addr, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, buffer, length);
@@ -196,7 +196,7 @@ bool I2CAPI_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t le
 }
 
 
-bool I2CAPI_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length)
+bool I2C_API_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length)
 {
     HAL_StatusTypeDef res;
     res = I2Cx_WriteMultiple(&hi2c2, addr, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, buffer, length);
@@ -204,7 +204,7 @@ bool I2CAPI_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t l
 }
 
 
-HAL_StatusTypeDef I2CAPI_IsDeviceReady(uint16_t dev_address, uint32_t trials)
+HAL_StatusTypeDef I2C_API_IsDeviceReady(uint16_t dev_address, uint32_t trials)
 {
     return (I2Cx_IsDeviceReady(&hi2c2, dev_address, trials));
 }

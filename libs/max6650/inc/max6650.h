@@ -1,5 +1,5 @@
-#ifndef __MAX6650_H
-#define __MAX6650_H
+#ifndef __MAX6650_INC_MAX6650_H
+#define __MAX6650_INC_MAX6650_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,16 +13,16 @@ extern "C" {
 /**
  * @brief I2C External Interface
  */
-typedef struct MAX6650I2C_ExtInterface_t
+struct MAX6650_I2C_ExtInterface
 {
     bool (*i2c_setup)(bool fast_speed);
     bool (*i2c_read)(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
     bool (*i2c_write)(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
-} MAX6650I2C_ExtInterface_t;
+};
 
 
 /**
- * @briefMAX6650 ADD line connection
+ * @brief MAX6650 ADD line connection
  */
 typedef enum
 {
@@ -33,6 +33,9 @@ typedef enum
 
 } MAX6650_ADDLineConn_t;
 
+/**
+ * @brief MAX6650 Operating Mode
+ */
 typedef enum
 {
     OperatingMode_Software_FullOn = 0,
@@ -41,6 +44,9 @@ typedef enum
     OperatingMode_Open_loop
 } MAX6650_OperatingMode_t;
 
+/**
+ * @brief MAX6650 Fan Voltage
+ */
 typedef enum
 {
     FanVoltage_5V = 0,
@@ -48,6 +54,9 @@ typedef enum
 
 } MAX6650_FanVoltage_t;
 
+/**
+ * @brief MAX6650 Kscale
+ */
 typedef enum
 {
     KScale_1 = 0,
@@ -60,14 +69,13 @@ typedef enum
 /**
  * @brief MAX6650 Configuration structure
  */
-typedef struct MAX6650_Config_t
+typedef struct
 {
     MAX6650_ADDLineConn_t add_line_connection;
     MAX6650_OperatingMode_t operating_mode;
     MAX6650_FanVoltage_t fan_lovtage;
     MAX6650_KScale_t k_scale;
     uint16_t rpm_max;
-
 } MAX6650_Config_t;
 
 /**
@@ -76,7 +84,7 @@ typedef struct MAX6650_Config_t
   * @param[in] External I2C Interface
   * @retval true if initialized, otherwise false
   */
-bool MAX6650_Init(MAX6650_Config_t *max6650_config, MAX6650I2C_ExtInterface_t *ext_i2c_interface);
+bool MAX6650_Init(MAX6650_Config_t *max6650_config, const struct MAX6650_I2C_ExtInterface *ext_i2c_interface);
 
 /**
  * @brief MAX6650 Set Speed
@@ -98,4 +106,4 @@ bool MAX6650_GetSpeed(uint8_t *speed);
 }
 #endif
 
-#endif /* __MAX6650_H */
+#endif /* __MAX6650_INC_MAX6650_H */

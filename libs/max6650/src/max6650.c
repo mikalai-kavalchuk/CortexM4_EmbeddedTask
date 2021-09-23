@@ -53,7 +53,7 @@
  controlled.
 */
 
-#include "stdio.h"
+#include <stdio.h>
 #include "max6650.h"
 
 #define MAX6650_SPEED_REG               0b00000000     /* fan speed R/W */
@@ -73,14 +73,14 @@
 
 #define COUNTT                          2               /* default count time */
 
-static MAX6650I2C_ExtInterface_t *i2c_ext_if = {0};
-static MAX6650_Config_t *config = {0};
+static const struct MAX6650_I2C_ExtInterface *i2c_ext_if = NULL;
+static MAX6650_Config_t *config = NULL;
 static uint8_t i2c_address;
 
 
 static uint8_t get_scale(MAX6650_KScale_t k_scale)
 {
-    uint res;
+    uint res = KScale_4;
     switch(k_scale)
     {
         case KScale_1: res = 1; break;
@@ -88,28 +88,27 @@ static uint8_t get_scale(MAX6650_KScale_t k_scale)
         case KScale_4: res = 4; break;
         case KScale_8: res = 8; break;
         case KScale_16: res = 16; break;
+        default: break;
     }
     return res;
 }
 
-bool MAX6650_Init(MAX6650_Config_t *max6650_config, MAX6650I2C_ExtInterface_t *ext_i2c_interface)
+bool MAX6650_Init(MAX6650_Config_t *max6650_config, const struct MAX6650_I2C_ExtInterface *ext_i2c_interface)
 {
     bool res;
     uint8_t config_byte;
     i2c_ext_if = ext_i2c_interface;
     config = max6650_config;
 
-    if(i2c_ext_if->i2c_setup == NULL ||
-       i2c_ext_if->i2c_read == NULL ||
-       i2c_ext_if->i2c_read == NULL)
+    if(i2c_ext_if == NULL)
     {
-        printf("MAX6650: External I2C interface is not initialized!");
+        printf("MAX6650: External I2C interface is not initialized!\r\n");
         return false;
     }
 
     if(config == NULL)
     {
-        printf("MAX6650: no configuration available!");
+        printf("MAX6650: no configuration available!\r\n");
         return false;
     }
 
@@ -128,7 +127,7 @@ bool MAX6650_Init(MAX6650_Config_t *max6650_config, MAX6650I2C_ExtInterface_t *e
             i2c_address = I2C_ADDRESS_RES10K;
             break;
         default:
-            printf("MAX6650: I2C address configuration failed!");
+            printf("MAX6650: I2C address configuration failed!\r\n");
             return false;
     }
 
@@ -162,6 +161,7 @@ bool MAX6650_GetSpeed(uint8_t *speed)
    return true;
 }
 
+
 bool MAX6650_SetSpeed(uint8_t speed_set, uint8_t *speed_actual)
 {
     uint8_t ktach;
@@ -170,7 +170,7 @@ bool MAX6650_SetSpeed(uint8_t speed_set, uint8_t *speed_actual)
 
     if(speed_set > 100)
     {
-        printf("MAX6650: Warning, speed should be in range: 0..100%%");
+        printf("MAX6650: Warning, speed should be in range: 0..100%%\r\n");
         speed_set = 100;
     }
 
