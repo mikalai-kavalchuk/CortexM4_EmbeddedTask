@@ -6,23 +6,38 @@ extern "C" {
 #endif
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "termcolor.h"
 
-#define COMMANDS_COUNT          4
-
 /**
- * Typdef for user commands
+ * @brief Typedef for user commands
  */
 typedef struct
 {
+    bool (*run)(int);
     const char *command_name;
-    int (*run_func)(int);
+    const char *command_param;
 } Command_t;
 
-extern Command_t commands_list[COMMANDS_COUNT];
 
+/**
+  * @brief UserFunctiond Initialization
+  * @retval true if initialized
+  */
+bool UserFunctions_Init(void);
 
+/**
+  * @brief Get count of user functions
+  * @retval count of functions
+  */
+uint8_t UserFunctions_GetFuncCount(void);
 
+/**
+  * @brief Get pointer to the used defined function by item index
+  * @param[in] item index of function
+  * @retval pointer to the function
+  */
+Command_t* UserFunctions_GetFunc(uint8_t item);
 
 #ifdef __cplusplus
 }

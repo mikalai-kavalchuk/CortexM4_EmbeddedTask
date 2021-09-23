@@ -4,25 +4,47 @@
 
 #include "user_functions.h"
 #include "uart_api.h"
+#include "i2c_api.h"
 #include "stm32l4xx_hal.h"
+
+#include "max6650.h"
+
+#define COMMANDS_COUNT          5
+
+static MAX6650_Config_t max6650_config;
+static MAX6650I2C_ExtInterface_t max6650_i2c_ext_interface;
 
 
 /* Prototypes for console commands */
-static int set_fan_speed(int var);
-static int get_fan_speed(int var);
-static int get_temperature(int var);
-static int self_erase(int var);
+static bool set_fan_speed(int var);
+static bool get_fan_speed(int var);
+static bool get_temperature(int var);
+static bool self_erase(int var);
+static bool help(int var);
 
 
 /**
  * List of commands with their names
  */
-Command_t commands_list[COMMANDS_COUNT] = {
-    {"set_fan_speed", set_fan_speed},
-    {"get_fan_speed", get_fan_speed},
-    {"get_temperature", get_temperature},
-    {"self_erase", self_erase}
+static Command_t commands_list[COMMANDS_COUNT] = {
+    {set_fan_speed,     "set_fan_speed",    ",speed<0..100>"},
+    {get_fan_speed,     "get_fan_speed",    ""},
+    {get_temperature,   "get_temperature",  "" },
+    {self_erase,        "self_erase",       " "TC_RED"*Warning: this operation is irreversible"TC_RESET},
+    {help,              "help",             ""}
 };
+
+
+/**
+ *
+ */
+static const char* get_status(bool status)
+{
+    const char* ok = "OK";
+    const char* err = "ERROR";
+
+    return status == true ? ok : err;
+}
 
 
 /**
@@ -88,39 +110,60 @@ static __RAM_FUNC void mass_erase_from_ram(void)
 
 /**
  * @brief Handler for "set_fan_speed" command
- * @param[in] desired speed <0..100>
+ * @param[in] desired speed <0..100%>
  */
-static int set_fan_speed(int var)
+static bool set_fan_speed(int set_speed)
 {
-    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
-    return 0;
+    uint8_t speed_actual = 0;
+    bool res;
+
+    res = MAX6650_SetSpeed(set_speed, &speed_actual);
+    printf(TC_RESET"Status: %s\r\n", get_status(res));
+
+    if(res!=false)
+    {
+        printf(TC_RESET"Set    speed: %d%%\r\n", set_speed);
+        printf(TC_RESET"Actual speed: %d%%\r\n", speed_actual);
+    }
+
+    return res;
 }
 
 /**
  * @brief Handler for "get_fan_speed" command
  * @param[in] not used
  */
-static int get_fan_speed(int var)
+static bool get_fan_speed(int var)
 {
-    printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
-    return 0;
+    uint8_t speed_actual = 0;
+    bool res;
+
+    res = MAX6650_GetSpeed(&speed_actual);
+    printf(TC_RESET"Status: %s\r\n", get_status(res));
+
+    if(res!=false)
+    {
+        printf(TC_RESET"Actual speed: %d%%\r\n", speed_actual);
+    }
+
+    return res;
 }
 
 /**
  * @brief Handler for "get_temperature" command
  * @param[in] not used
  */
-static int get_temperature(int var)
+static bool get_temperature(int var)
 {
     printf(TC_RESET"FUNC: %s, var=%d\r\n", __FUNCTION__, var);
-    return 0;
+    return true;
 }
 
 /**
  * @brief Handler for "self_erase" command
  * @param[in] not used
  */
-static int self_erase(int var)
+static bool self_erase(int var)
 {
     char value;
     bool wait_for_op = true;
@@ -155,5 +198,64 @@ static int self_erase(int var)
         }
     }
 
-    return 0;
+    return true;
+}
+
+static bool help(int var)
+{
+    UartAPI_PrintMenu();
+    return true;
+}
+
+
+bool UserFunctions_Init(void)
+{
+    bool res;
+
+    /* MAX6650/fan configuration */
+    max6650_config.add_line_connection = ADD_Line_GND;
+    max6650_config.rpm_max = 10500U;
+    max6650_config.fan_lovtage = FanVoltage_12V;
+    max6650_config.operating_mode = OperatingMode_Closed_Loop;
+    /* Select the KScale value so the fan’s full speed is achieved with a speed register value of approximately 64
+     * Fan-Speed Register value (KTACH) may be calculated as:
+     * tTACH = 1 / (2 x Fan Speed[RPS])
+     * KTACH = [tTACH x KSCALE x (fCLK / 128)] - 1
+     *
+     * KSCALE=11.5 for 10500 RPM, so choosing scale=KScale_16, in this case KTACH=90 at max speed (should be less than 128)*/
+    max6650_config.k_scale = KScale_16;
+
+    /* MAX6650 I2C external interface configuration */
+    max6650_i2c_ext_interface.i2c_setup = I2CAPI_Init;
+    max6650_i2c_ext_interface.i2c_read = I2CAPI_ReadMultiple;
+    max6650_i2c_ext_interface.i2c_write = I2CAPI_WriteMultiple;
+
+    res = MAX6650_Init(&max6650_config, &max6650_i2c_ext_interface);
+
+    if(res != true)
+    {
+        printf(TC_RED"MAX6650 initialization error!\r\n");
+        return false;
+    }
+
+    return true;
+}
+
+
+inline uint8_t UserFunctions_GetFuncCount()
+{
+    return COMMANDS_COUNT;
+}
+
+
+Command_t* UserFunctions_GetFunc(uint8_t item)
+{
+    if(item < COMMANDS_COUNT)
+    {
+        return commands_list+item;
+    }
+    else
+    {
+        return NULL;
+    }
 }

@@ -5,20 +5,29 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
 #include "main.h"
+
 
 
 /**
   * @brief  Initializes I2C low level.
+  * @param  fast_speed: fast speed mode
   * @retval None
   */
-void I2cAPI_Init(void);
+bool I2CAPI_Init(bool fast_speed);
 
 /**
   * @brief  DeInitializes I2C low level.
   * @retval None
   */
-void I2cAPI_DeInit(void);
+void I2CAPI_DeInit(void);
+
+/**
+  * @brief  Set I2C speed.
+  * @retval None
+  */
+void I2CAPI_SetSpeed(uint32_t i2c_speed);
 
 /**
   * @brief  I2C writes a single data.
@@ -27,7 +36,7 @@ void I2cAPI_DeInit(void);
   * @param  Value: Data to be written
   * @retval None
   */
-void I2cAPI_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
+void I2CAPI_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
 
 /**
   * @brief  I2C reads a single data.
@@ -35,7 +44,7 @@ void I2cAPI_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
   * @param  Reg: Reg address
   * @retval Data to be read
   */
-uint8_t I2cAPI_Read(uint8_t Addr, uint8_t Reg);
+uint8_t I2CAPI_Read(uint8_t Addr, uint8_t Reg);
 
 /**
   * @brief  I2C reads multiple data with I2C communication
@@ -46,7 +55,8 @@ uint8_t I2cAPI_Read(uint8_t Addr, uint8_t Reg);
   * @param  Length: Length of the data
   * @retval HAL status
   */
-uint16_t I2cAPI_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
+bool I2CAPI_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
+
 
 /**
   * @brief  I2C writes multiple data with I2C communication
@@ -57,7 +67,8 @@ uint16_t I2cAPI_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_
   * @param  Length: Length of the data
   * @retval None
   */
-void I2cAPI_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
+
+bool I2CAPI_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
 /**
   * @brief  I2C checks if target device is ready for communication.
   * @note   This function is used with Memory devices
@@ -65,7 +76,7 @@ void I2cAPI_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t L
   * @param  Trials: Number of trials
   * @retval HAL status
   */
-HAL_StatusTypeDef I2cAPI_IsDeviceReady(uint16_t DevAddress, uint32_t Trials);
+HAL_StatusTypeDef I2CAPI_IsDeviceReady(uint16_t DevAddress, uint32_t Trials);
 
 #ifdef __cplusplus
 }

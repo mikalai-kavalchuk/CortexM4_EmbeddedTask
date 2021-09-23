@@ -13,7 +13,6 @@ extern "C" {
 #define ST_LINK_USART1_RX_Pin           GPIO_PIN_7
 #define ST_LINK_USART1_RX_GPIO_Port     GPIOB
 
-void Error_Handler(void);
 
 #ifdef __cplusplus
 }

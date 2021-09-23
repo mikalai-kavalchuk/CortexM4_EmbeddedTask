@@ -2,6 +2,7 @@
 #include "i2c_api.h"
 #include "uart_api.h"
 #include "user_functions.h"
+#include "error.h"
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -12,6 +13,8 @@ static void MX_GPIO_Init(void);
   */
 int main(void)
 {
+    bool i2c_fast_speed = false;
+
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -20,7 +23,8 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  I2cAPI_Init();
+
+  I2CAPI_Init(i2c_fast_speed);
   UartAPI_Init();
 
   /* Don't use buffer for stdin */
@@ -30,7 +34,13 @@ int main(void)
   printf(TC_CLS);
   printf(TC_HOME);
 
-  printf(TC_MAGENTA"---------------- UART<->I2C Controller ---------------\r\n");
+  if(UserFunctions_Init() != true)
+  {
+      printf(TC_RED"ERROR: Can't initialize..\r\n");
+      //Error_Handler();
+  }
+
+  printf(TC_MAGENTA"---------------- UART<->I2C Controller ---------------");
   UartAPI_PrintMenu();
 
   /* Infinite loop */
@@ -111,18 +121,6 @@ static void MX_GPIO_Init(void)
 
 }
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
-}
 
 #ifdef  USE_FULL_ASSERT
 /**

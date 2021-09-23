@@ -5,10 +5,9 @@
 #include "stm32l4xx_hal.h"
 #include "user_functions.h"
 #include "uart_api.h"
+#include "error.h"
 
 #define INCOMING_BUFF_LENGTH    64
-
-extern UART_HandleTypeDef huart1;
 
 UART_HandleTypeDef huart1;
 
@@ -118,11 +117,14 @@ __RAM_FUNC void UartAPI_SendString(char *c, int len)
 
 void UartAPI_PrintMenu(void)
 {
+    Command_t *func;
     printf(TC_YELLOW"\r\n\r\nUse next commands to control peripheral devices:\r\n");
-    printf(TC_YELLOW"- %s,speed,<0..100>\r\n", commands_list[0].command_name);
-    printf(TC_YELLOW"- %s\r\n", commands_list[1].command_name);
-    printf(TC_YELLOW"- %s\r\n", commands_list[2].command_name);
-    printf(TC_YELLOW"- %s "TC_RED"*Warning: this operation is irreversible\r\n\r\n", commands_list[3].command_name);
+    for(uint8_t i = 0; i < UserFunctions_GetFuncCount(); i++)
+    {
+        func = UserFunctions_GetFunc(i);
+        printf(TC_YELLOW"- %s%s\r\n", func->command_name, func->command_param);
+    }
+    printf("\r\n");
 }
 
 
@@ -130,24 +132,25 @@ void UartAPI_WaitForCommandAndExecute(void)
 {
     char incom[INCOMING_BUFF_LENGTH];
     int value = -1;
-    int res = -1;
+    bool res;
     char *p;
     bool command_found = false;
+    Command_t *func;
 
-    printf(TC_RESET"Waiting for commands..\r\n\r\n");
+    printf(TC_RESET"\r\nWaiting for commands..\r\n\r\n");
 
     memset(incom, 0 ,INCOMING_BUFF_LENGTH);
     scanf("%s", incom);
 
-    for(int i=0; i<COMMANDS_COUNT; i++)
+    for(uint8_t i = 0; i < UserFunctions_GetFuncCount(); i++)
     {
-        p = strstr(incom, commands_list[i].command_name);
+        func = UserFunctions_GetFunc(i);
+        p = strstr(incom, func->command_name);
 
         /* Command found */
         if( p != NULL )
         {
             command_found = true;
-
             p = strstr(incom,",");
 
             /* Value found */
@@ -155,14 +158,10 @@ void UartAPI_WaitForCommandAndExecute(void)
             {
                 value = atoi(p+1);
             }
-            res = commands_list[i].run_func(value);
-            if(res != 1)
+            res = func->run(value);
+            if(res != true)
             {
-
-            }
-            else
-            {
-
+                printf(TC_RED"Function %s failed\r\n"TC_RESET, func->command_name);
             }
             break;
         }
@@ -170,7 +169,7 @@ void UartAPI_WaitForCommandAndExecute(void)
 
     if(!command_found)
     {
-        printf(TC_YELLOW"\r\nCommand \"%s\" is not found..\r\n\r\n", incom);
+        printf(TC_YELLOW"\r\nCommand \"%s\" is not found..\r\n", incom);
     }
 }
 

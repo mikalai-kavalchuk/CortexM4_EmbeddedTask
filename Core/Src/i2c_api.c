@@ -1,4 +1,5 @@
 #include "i2c_api.h"
+#include "error.h"
 
 I2C_HandleTypeDef hi2c2;
 
@@ -150,48 +151,61 @@ static void I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr)
                             Exported functions
 *******************************************************************************/
 
-void I2cAPI_Init(void)
+bool I2CAPI_Init(bool fast_speed)
 {
-  I2Cx_Init(&hi2c2);
+    I2Cx_Init(&hi2c2);
+
+    if(fast_speed)
+    {
+        HAL_I2CEx_EnableFastModePlus(I2C_FASTMODEPLUS_I2C2);
+    }
+    else
+    {
+        HAL_I2CEx_DisableFastModePlus(I2C_FASTMODEPLUS_I2C2);
+    }
+
+    return true;
 }
 
 
-void I2cAPI_DeInit(void)
+void I2CAPI_DeInit(void)
 {
-  I2Cx_DeInit(&hi2c2);
+    I2Cx_DeInit(&hi2c2);
 }
 
 
-void I2cAPI_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
+void I2CAPI_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
 {
-  I2Cx_WriteMultiple(&hi2c2, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT,(uint8_t*)&Value, 1);
+    I2Cx_WriteMultiple(&hi2c2, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT,(uint8_t*)&Value, 1);
 }
 
 
-uint8_t I2cAPI_Read(uint8_t Addr, uint8_t Reg)
+uint8_t I2CAPI_Read(uint8_t Addr, uint8_t Reg)
 {
-  uint8_t read_value = 0;
-
-  I2Cx_ReadMultiple(&hi2c2, Addr, Reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*)&read_value, 1);
-
-  return read_value;
+    uint8_t read_value = 0;
+    I2Cx_ReadMultiple(&hi2c2, Addr, Reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*)&read_value, 1);
+    return read_value;
 }
 
 
-uint16_t I2cAPI_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length)
+bool I2CAPI_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length)
 {
- return I2Cx_ReadMultiple(&hi2c2, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, Buffer, Length);
+    HAL_StatusTypeDef res;
+    res = I2Cx_ReadMultiple(&hi2c2, addr, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, buffer, length);
+    return res == HAL_OK ? true : false;
 }
 
 
-void I2cAPI_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length)
+bool I2CAPI_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length)
 {
-  I2Cx_WriteMultiple(&hi2c2, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, Buffer, Length);
+    HAL_StatusTypeDef res;
+    res = I2Cx_WriteMultiple(&hi2c2, addr, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, buffer, length);
+    return res == HAL_OK ? true : false;
 }
 
 
-HAL_StatusTypeDef I2cAPI_IsDeviceReady(uint16_t DevAddress, uint32_t Trials)
+HAL_StatusTypeDef I2CAPI_IsDeviceReady(uint16_t dev_address, uint32_t trials)
 {
-  return (I2Cx_IsDeviceReady(&hi2c2, DevAddress, Trials));
+    return (I2Cx_IsDeviceReady(&hi2c2, dev_address, trials));
 }
 
