@@ -7,14 +7,14 @@
 
 The system consists of FAN(12V, 10500 rpm) + [MAX6650 FAN controller](https://datasheets.maximintegrated.com/en/ds/MAX6650-MAX6651.pdf) + Cortex M4 MCU ([B-L475E-IOT01A1 devkit](https://www.st.com/en/evaluation-tools/b-l475e-iot01a.html#overview)) that is connected to PC through onboard ST-Link with Virtual COM Port.
 
-MAX6650 code placed in an external library and linked to the firmware code. 
-
 ## How to build
 
 [GNU Arm Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads) should be installed for code building .
 Make sure that your system variables contain the necessary. If you use Windows, it should look like that ( `System Properties -> Environment variables -> Edit "Path" variable` ):
 
 ![alt_text](images/system_variables.png "structure")
+
+MAX6650 code placed in an external library so you have to compile library first. 
 
 ### 1. Build MAX6650 library
 
