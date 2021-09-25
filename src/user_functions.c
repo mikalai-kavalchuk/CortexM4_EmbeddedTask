@@ -60,8 +60,15 @@ static __RAM_FUNC void mass_erase_from_ram(void)
     char value;
     char * str_no_func = "\r\n"TC_RED"No functional\r\n"TC_RESET;
     int str_no_func_len = strlen(str_no_func);
+    char str_no_func_ram[str_no_func_len];
+    /* Copy string to RAM before flash erasing */
+    memcpy(str_no_func_ram, str_no_func, str_no_func_len);
+    
     char * str_info = "\r\n"TC_RED"MCU FLASH was erased. Device is not functional now. It will not start after reset!\r\n"TC_RESET;
     int str_info_len = strlen(str_info);
+    char str_info_ram[str_info_len];
+    /* Copy string to RAM before flash erasing */
+    memcpy(str_info_ram, str_info, str_info_len);
 
     /* Authorize the FLASH Registers access */
     WRITE_REG(FLASH->KEYR, FLASH_KEY1);
@@ -72,9 +79,6 @@ static __RAM_FUNC void mass_erase_from_ram(void)
     {
         __asm__("nop");
     }
-
-    /* Disable instruction cache  */
-    __HAL_FLASH_INSTRUCTION_CACHE_DISABLE();
 
     /* Set the Mass Erase Bit for the bank 1 */
     SET_BIT(FLASH->CR, FLASH_CR_MER1);
@@ -92,8 +96,8 @@ static __RAM_FUNC void mass_erase_from_ram(void)
     }
 
     /* Set the LOCK Bit to lock the FLASH Registers access */
-    SET_BIT(FLASH->CR, FLASH_CR_LOCK);
-
+    SET_BIT(FLASH->CR, FLASH_CR_LOCK); 
+    
     UartAPI_SendString(str_info, str_info_len);
 
     /* Handle incoming commands after erasing */

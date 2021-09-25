@@ -8,9 +8,9 @@ TARGET = max6650_test
 # building variables
 ######################################
 # debug build?
-DEBUG = 0
+DEBUG = 1
 # optimization
-OPT = -Ofast
+OPT = -Og
 
 
 #######################################
