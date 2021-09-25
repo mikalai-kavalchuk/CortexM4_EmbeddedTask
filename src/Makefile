@@ -8,9 +8,9 @@ TARGET = max6650_test
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
-OPT = -Og
+OPT = -Ofast
 
 
 #######################################
@@ -24,7 +24,6 @@ BUILD_DIR = out
 ######################################
 # C sources
 C_SOURCES =  \
-../libs/max6650/src/max6650.c \
 main.c \
 error.c \
 i2c_api.c \
@@ -52,6 +51,7 @@ drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
 drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
 drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c 
+#../libs/max6650/src/max6650.c \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -138,8 +138,8 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32L475VGTx_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
-LIBDIR = 
+LIBS = -lc -lm -lnosys -lmax6650
+LIBDIR = -L../libs/max6650/src/out
 
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
