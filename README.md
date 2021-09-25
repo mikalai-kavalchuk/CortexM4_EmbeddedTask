@@ -45,7 +45,7 @@ Use [PuTTY](https://www.putty.org/) to connect with microcontroller
 
 **COM Port settings:**
 
-* Speed 155200
+* Speed: 115200
 
 After `reset` you should see text menu in the terminal. Just type commands from list to see results:
 
