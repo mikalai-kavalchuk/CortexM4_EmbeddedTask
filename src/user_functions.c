@@ -207,7 +207,7 @@ static bool max6650_init()
 {
     bool res;
 
-    max6650_config = (MAX6650_Config_t *) malloc(sizeof(max6650_config));
+    max6650_config = (MAX6650_Config_t *) malloc(sizeof(MAX6650_Config_t));
     if(max6650_config == NULL)
     {
         printf(TC_RED"MAX6650 config: no memory\r\n");
