@@ -53,7 +53,6 @@
  controlled.
 */
 
-#include <stdio.h>
 #include "max6650.h"
 
 #define MAX6650_SPEED_REG               0b00000000     /* fan speed R/W */
