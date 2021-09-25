@@ -1,5 +1,7 @@
-Debug/*
-out/*
+**/src/out/
+*.lst
+*.bin
+*.hex
 
 ### Eclipse ###
 .metadata
