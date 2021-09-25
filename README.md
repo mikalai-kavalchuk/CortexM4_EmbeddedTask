@@ -12,7 +12,7 @@ The system consists of FAN(12V, 10500 rpm) + [MAX6650 FAN controller](https://da
 [GNU Arm Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads) should be installed for code building .
 Make sure that your system variables contain the necessary. If you use Windows, it should look like that ( `System Properties -> Environment variables -> Edit "Path" variable` ):
 
-![alt_text](images/system_variables.png "structure")
+![alt_text](images/system_variables.png "system variables")
 
 MAX6650 code placed in an external library so you have to compile library first. 
 
@@ -49,7 +49,7 @@ Use [PuTTY](https://www.putty.org/) to connect with microcontroller
 
 After `reset` you should see text menu in the terminal. Just type commands from list to see results:
 
-![alt_text](images/menu.png "structure")
+![alt_text](images/menu.png "menu")
 
 `*MAX6650 Initialization error shows because of MAX6650 IC is not connected to the I2C-bus.`
 
@@ -66,6 +66,6 @@ After `reset` you should see text menu in the terminal. Just type commands from 
 
 ## Example
 
-![alt_text](images/example.png "structure")
+![alt_text](images/example.png "example")
 
 After calling "self_erase" command STM32 Flash was erased, UART related functions handles from RAM to print "No functional" for any incoming command.
